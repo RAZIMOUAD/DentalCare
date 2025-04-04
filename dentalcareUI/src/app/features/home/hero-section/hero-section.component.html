@@ -1,0 +1,85 @@
+<section class="relative w-full h-screen overflow-hidden">
+  <!-- Vidéo desktop -->
+  <video
+    autoplay
+    muted
+    loop
+    playsinline
+    class="hidden md:block absolute top-0 left-0 w-full h-full object-cover"
+  >
+    <source src="assets/videos/hero-video.mp4" type="video/mp4" />
+  </video>
+
+  <!-- Image mobile -->
+  <img
+    src="assets/images/hero-mobile.jpg"
+    alt="Examen dentaire"
+    class="block md:hidden absolute top-0 left-0 w-full h-full object-cover"
+  />
+
+  <!-- Overlay : léger flou + voile bleu tendre -->
+  <div class="absolute top-0 left-0 w-full h-full bg-cyan-50/60 backdrop-blur-[3px] z-10"></div>
+
+  <!-- Contenu centré -->
+  <div
+    class="relative z-20 flex flex-col justify-center items-center text-center h-full px-6 sm:px-10 text-[#134e4a]"
+  >
+    <h1
+      class="hero-title text-3xl sm:text-5xl md:text-6xl font-bold tracking-tight mb-6 animate-fade-in-up"
+    >
+      Transformez votre sourire,<br />
+      avec élégance et expertise.
+    </h1>
+
+    <p class="hero-subtitle text-base sm:text-lg md:text-xl max-w-2xl mb-8 animate-fade-in delay-300">
+      Bienvenue chez DentalCare — là où la technologie et l'art dentaire
+      s’unissent dans une atmosphère douce et féminine.
+    </p>
+
+    <button
+      class="cta-button bg-white/90 text-cyan-800 font-semibold py-3 px-6 rounded-full hover:bg-cyan-100 hover:scale-105 transition-all duration-300 animate-fade-in delay-500"
+    >
+      Prendre rendez-vous
+    </button>
+  </div>
+</section>
+<section class="section-wrapper">
+  <!-- Effets d’arrière-plan artistique -->
+  <div class="absolute -top-32 -left-32 w-[500px] h-[500px] rounded-full bg-cyan-100 opacity-40 blur-3xl z-0"></div>
+  <div class="absolute -bottom-32 -right-32 w-[400px] h-[400px] rounded-full bg-cyan-200 opacity-30 blur-2xl z-0"></div>
+
+  <div class="relative z-10 max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+
+    <!-- Texte -->
+    <div class="fade-in-up">
+      <h2 class="text-3xl md:text-5xl font-extrabold text-cyan-900 mb-6 leading-tight animate-fade-in-up">
+        Une clinique de confiance, <span class="text-cyan-600">une mission claire</span>
+      </h2>
+      <p class="text-gray-700 text-lg mb-6 fade-in-up delay-300">
+        Chez DentalCare, nous croyons en la précision, l’accueil humain et la technologie. Notre mission est de vous offrir des soins personnalisés dans un cadre chaleureux et innovant.
+      </p>
+      <ul class="space-y-2 text-gray-600 font-medium fade-in-up delay-500">
+        <li class="flex items-start gap-2">
+          <span class="text-cyan-600 font-bold">✓</span> Matériel de dernière génération
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="text-cyan-600 font-bold">✓</span> Équipe passionnée et expérimentée
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="text-cyan-600 font-bold">✓</span> Soin personnalisé pour chaque patient
+        </li>
+      </ul>
+    </div>
+
+    <!-- Empilement artistique des images -->
+    <div class="screen-stack fade-in-up">
+      <img src="assets/images/clinic-1.jpg" alt="Clinique">
+      <img src="assets/images/clinic-2.jpg" alt="Salle de soins">
+      <img src="assets/images/clinic-3.jpg" alt="Équipement">
+    </div>
+
+  </div>
+</section>
+
+<section class="section-following">
+</section>

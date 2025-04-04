@@ -1,0 +1,126 @@
+/* hero-section.component.css */
+
+/* Animations */
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 1s ease-out forwards;
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 1.2s ease-out forwards;
+}
+
+.delay-300 {
+  animation-delay: 0.3s;
+}
+
+.delay-500 {
+  animation-delay: 0.5s;
+}
+
+/* Responsive Typography Enhancements */
+.hero-title {
+  line-height: 1.2;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.hero-subtitle {
+  color: #0f4c4c;
+  font-weight: 400;
+  text-shadow: 0 1px 3px rgba(255, 255, 255, 0.4);
+}
+
+.cta-button {
+  box-shadow: 0 4px 20px rgba(0, 128, 128, 0.15);
+  backdrop-filter: blur(2px);
+}
+/* about section */
+.section-wrapper {
+  position: relative;
+  background-color: white;
+  padding: 6rem 1.5rem; /* py-24 px-6 */
+  padding-left: 4rem;   /* md:px-16 */
+  padding-right: 4rem;
+  overflow: visible;
+  z-index: 1;
+  overflow-x: hidden;
+}
+
+/* Animation globale quand visible */
+.fade-in-up {
+  opacity: 0;
+  transform: translateY(30px) scale(0.95);
+  transition: all 0.8s ease-out;
+}
+
+.fade-in-up.show {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+/* Empilement artistique */
+.screen-stack {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+  margin: auto;
+}
+
+.screen-stack img {
+  position: absolute;
+  width: 100%;
+  border-radius: 1rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  transition: transform 1s ease;
+  object-fit: cover;
+  height: auto;
+  max-height: 400px;
+}
+
+.screen-stack img:nth-child(1) {
+  z-index: 1;
+  transform: rotate(-6deg) translateY(-20px);
+}
+
+.screen-stack img:nth-child(2) {
+  z-index: 2;
+  transform: rotate(0deg);
+}
+
+.screen-stack img:nth-child(3) {
+  z-index: 3;
+  transform: rotate(6deg) translateY(20px);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .screen-stack img {
+    position: static;
+    transform: none;
+    margin-bottom: 1rem;
+  }
+}
+/* Section après le about */
+.section-following {
+  margin-top: 8rem; /* équivalent mt-32 */
+}
+

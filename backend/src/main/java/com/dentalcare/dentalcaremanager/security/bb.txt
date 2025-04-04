@@ -1,0 +1,7 @@
+Gestion granulaire des rôles (ADMIN, USER, etc.)
+
+Classe dédiée SecurityErrorHandler pour bien répondre à Postman ou frontend
+
+Centraliser les chemins publics
+
+Logger les rôles dans le contexte utilisateur pour audit/trac
