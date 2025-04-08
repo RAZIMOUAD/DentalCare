@@ -1,0 +1,5 @@
+/* Utilise Tailwind directement pour tout */
+:host {
+  display: block;
+  position: relative;
+}

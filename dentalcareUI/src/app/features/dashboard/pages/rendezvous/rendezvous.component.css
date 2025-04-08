@@ -1,0 +1,54 @@
+/* === ✅ STRUCTURE DU TABLEAU === */
+table {
+  min-width: 100%;
+  border-collapse: collapse;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  background-color: white;
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+
+/* === ✅ EFFET HOVER SUR LES LIGNES === */
+.rdv-item {
+  transition: background-color 0.25s ease;
+}
+.rdv-item:hover {
+  background-color: #f3f4f6; /* Tailwind: hover:bg-gray-100 */
+}
+
+/* === ✅ CELLULES ET EN-TÊTES === */
+td, th {
+  padding: 0.75rem 1rem;
+  transition: all 0.2s ease-in-out;
+  text-align: left;
+  vertical-align: middle;
+}
+
+thead {
+  background-color: #eff6ff; /* Tailwind: bg-blue-50 */
+  color: #1e3a8a;            /* Tailwind: text-blue-900 */
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+/* === ✅ ARRONDI DES EN-TÊTES DU TABLEAU === */
+thead tr:first-child th:first-child {
+  border-top-left-radius: 0.75rem;
+}
+thead tr:first-child th:last-child {
+  border-top-right-radius: 0.75rem;
+}
+
+/* === ✅ RÉACTIVITÉ MOBILE === */
+@media (max-width: 768px) {
+  td, th {
+    padding: 0.5rem;
+    font-size: 0.875rem;
+  }
+
+  table {
+    font-size: 0.85rem;
+  }
+}

@@ -1,0 +1,44 @@
+<section class="p-6 space-y-8">
+
+  <!-- 🧊 Cartes statistiques -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+    <app-card-stats
+      title="Patients"
+      [value]="(stats?.totalPatients || 0) + ''"
+      icon="🦷"
+      color="bg-blue-100 text-blue-700"
+    />
+    <app-card-stats
+      title="Rendez-vous aujourd'hui"
+      [value]="(stats?.appointmentsToday || 0) + ''"
+      icon="📅"
+      color="bg-yellow-100 text-yellow-700"
+    />
+    <app-card-stats
+      title="Revenus"
+      [value]="(stats?.totalRevenue || 0) + ' €'"
+      icon="💰"
+      color="bg-green-100 text-green-700"
+    />
+  </div>
+
+  <!-- 🔜 Future section : Calendrier, tableau RDV, etc. -->
+  <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+    <!-- Ex : Calendrier ou boîte notifications à gauche -->
+    <div class="col-span-1 xl:col-span-2">
+      <!-- Ici on mettra <app-calendar-widget> plus tard -->
+      <div class="bg-white rounded-xl p-6 shadow text-center text-gray-400 italic">
+        [ Calendrier de la semaine en cours - à venir ]
+      </div>
+    </div>
+
+    <!-- Notifications -->
+    <div class="col-span-1">
+      <!-- Ici on mettra <app-notifications> plus tard -->
+      <div class="bg-white rounded-xl p-6 shadow text-center text-gray-400 italic">
+        [ Notifications / Alertes - à venir ]
+      </div>
+    </div>
+  </div>
+
+</section>

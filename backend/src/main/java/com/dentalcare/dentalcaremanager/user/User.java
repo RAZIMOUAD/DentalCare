@@ -1,6 +1,7 @@
 package com.dentalcare.dentalcaremanager.user;
 
 
+import com.dentalcare.dentalcaremanager.rdv.RendezVous;
 import com.dentalcare.dentalcaremanager.role.Role;
 import jakarta.persistence.*;
 import lombok.*;
@@ -14,10 +15,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.security.Principal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Getter
@@ -111,5 +109,9 @@ public class User implements UserDetails, Principal {
     public boolean hasRole(String roleName) {
         return roles.stream().anyMatch(r -> r.getName().equals(roleName));
     }
+    @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private List<RendezVous> rendezVousList = new ArrayList<>();
 
 }

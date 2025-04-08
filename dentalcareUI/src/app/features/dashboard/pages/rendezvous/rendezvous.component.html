@@ -1,0 +1,73 @@
+<section class="p-6 space-y-6" [@fadeList]>
+
+  <!-- Titre -->
+  <div class="flex items-center justify-between border-b pb-4">
+    <div>
+      <h2 class="text-3xl font-bold text-gray-800">🦷 Agenda du cabinet</h2>
+      <p class="text-sm text-gray-500">Consultez et gérez vos rendez-vous depuis ce tableau de bord moderne</p>
+    </div>
+  </div>
+
+  <!-- Erreur / Chargement -->
+  <div *ngIf="loading" class="text-blue-600 text-center">Chargement des rendez-vous...</div>
+  <div *ngIf="error" class="text-red-500 text-center">{{ error }}</div>
+
+  <!-- Contenu principal -->
+  <div *ngIf="!loading" class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+
+    <!-- 🎯 Tableau des rendez-vous -->
+    <div class="bg-white rounded-xl shadow p-4 overflow-auto border border-gray-100">
+      <h3 class="text-lg font-semibold mb-4 text-blue-600">📋 Vue synthétique</h3>
+
+      <div *ngIf="rendezvousList.length > 0; else noData">
+        <table class="min-w-full text-sm text-gray-800">
+          <thead>
+          <tr class="bg-gray-50 border-b">
+            <th class="py-2 px-3 text-left">Patient</th>
+            <th class="py-2 px-3 text-left">Date</th>
+            <th class="py-2 px-3 text-left">Heure</th>
+            <th class="py-2 px-3 text-left">Statut</th>
+            <th class="py-2 px-3 text-right">Actions</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let rdv of rendezvousList" class="hover:bg-gray-50 rdv-item border-b">
+            <td class="py-2 px-3">{{ rdv.patientFullName }}</td>
+            <td class="py-2 px-3">{{ rdv.date }}</td>
+            <td class="py-2 px-3">{{ rdv.heureDebut }} - {{ rdv.heureFin }}</td>
+            <td class="py-2 px-3">
+                <span [ngClass]="{
+                  'text-green-600 font-medium': rdv.status === 'CONFIRME',
+                  'text-yellow-600 font-medium': rdv.status === 'EN_ATTENTE',
+                  'text-red-600 font-medium': rdv.status === 'ANNULE'
+                }">
+                  {{ rdv.status }}
+                </span>
+            </td>
+            <td class="py-2 px-3 text-right">
+              <button
+                (click)="deleteRdv(rdv.id)"
+                class="text-red-500 hover:text-red-700 transition font-medium"
+              >
+                Supprimer
+              </button>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 🔔 Aucune donnée -->
+      <ng-template #noData>
+        <div class="text-gray-500 text-center py-6 italic">Aucun rendez-vous enregistré.</div>
+      </ng-template>
+    </div>
+
+    <!-- 📆 FullCalendar -->
+    <div class="bg-white rounded-xl shadow p-4 border border-gray-100">
+      <h3 class="text-lg font-semibold mb-4 text-blue-600">📆 Vue calendrier</h3>
+      <full-calendar [options]="calendarOptions"></full-calendar>
+    </div>
+
+  </div>
+</section>

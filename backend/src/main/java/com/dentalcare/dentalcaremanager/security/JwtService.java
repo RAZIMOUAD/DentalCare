@@ -1,6 +1,7 @@
 package com.dentalcare.dentalcaremanager.security;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
@@ -41,18 +42,24 @@ public class JwtService {
 
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
         Instant now = Instant.now();
-        return Jwts.builder()
+        Instant expiration = now.plusMillis(jwtExpiration);
+
+        JwtBuilder builder = Jwts.builder()
+                .header()  // facultatif, mais propre
+                .add("typ", "JWT")
+                .and()
                 .claims(extraClaims)
-                .subject(userDetails.getUsername())
-                .issuedAt(Date.from(now))
-                .expiration(Date.from(now.plusMillis(jwtExpiration)))
-                .claim("authorities", userDetails.getAuthorities()
-                        .stream()
+                .claim("roles", userDetails.getAuthorities().stream()
                         .map(GrantedAuthority::getAuthority)
                         .toList())
-                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
-                .compact();
+                .subject(userDetails.getUsername())
+                .issuedAt(Date.from(now))
+                .expiration(Date.from(expiration))
+                .signWith(getSignInKey(), Jwts.SIG.HS256); // ✅ Méthode moderne
+
+        return builder.compact();
     }
+
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
         String username = extractUsername(token);

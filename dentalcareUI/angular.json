@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "dentalcare-temp": {
+    "dentalcare-ui": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -13,7 +13,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/dentalcare-temp",
+            "outputPath": "dist/dentalcare-ui",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
@@ -60,10 +60,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "dentalcare-temp:build:production"
+              "buildTarget": "dentalcare-ui:build:production"
             },
             "development": {
-              "buildTarget": "dentalcare-temp:build:development"
+              "buildTarget": "dentalcare-ui:build:development"
             }
           },
           "defaultConfiguration": "development"

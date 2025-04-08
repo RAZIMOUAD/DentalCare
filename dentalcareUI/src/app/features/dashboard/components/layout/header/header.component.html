@@ -1,0 +1,42 @@
+<header class="w-full h-16 flex items-center justify-between px-6 bg-white shadow-sm border-b border-gray-200">
+  <!-- Branding (optionnel) -->
+  <div class="text-xl font-semibold text-blue-600 hidden sm:block">
+    Dashboard
+  </div>
+
+  <!-- Droite : Profil + notifications -->
+  <div class="flex items-center gap-6">
+
+    <!-- Notifications -->
+    <div class="relative">
+      <button class="text-gray-500 hover:text-blue-600 transition text-xl">
+        🔔
+      </button>
+      <span *ngIf="notifications > 0"
+            class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5">
+        {{ notifications }}
+      </span>
+    </div>
+
+    <!-- Nom de l'utilisateur -->
+    <div class="hidden sm:flex flex-col text-right">
+      <span class="text-sm text-gray-800 font-medium" *ngIf="fullName">
+        Bonjour, {{ fullName }}
+      </span>
+      <span class="text-xs text-gray-400">Administrateur</span>
+    </div>
+
+    <!-- Avatar -->
+    <img src="https://i.pravatar.cc/40?u=admin"
+         alt="Avatar"
+         class="w-10 h-10 rounded-full shadow-md border border-gray-200" />
+
+    <!-- Bouton logout -->
+    <button (click)="onLogout()"
+            class="text-gray-500 hover:text-red-500 transition text-xl"
+            title="Déconnexion">
+      🚪
+    </button>
+  </div>
+</header>
+

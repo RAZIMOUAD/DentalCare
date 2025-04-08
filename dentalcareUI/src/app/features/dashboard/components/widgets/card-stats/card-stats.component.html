@@ -1,0 +1,23 @@
+<div
+  class="w-full rounded-xl shadow-md p-4 flex items-center gap-4 bg-white hover:shadow-lg transition-all duration-300 group cursor-pointer"
+>
+
+  <!-- Badge / Icône -->
+  <div
+    class="w-12 h-12 flex items-center justify-center rounded-lg text-xl font-semibold"
+    [ngClass]="color"
+  >
+    {{ icon }}
+  </div>
+
+  <!-- Contenu principal -->
+  <div class="flex flex-col justify-center">
+    <span class="text-sm text-gray-500 font-medium">
+      {{ title }}
+    </span>
+    <span class="text-xl font-semibold text-gray-800 group-hover:text-blue-600 transition">
+      {{ value }}
+    </span>
+  </div>
+
+</div>
