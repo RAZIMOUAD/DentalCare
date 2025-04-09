@@ -1,0 +1,6 @@
+/* Ajoute seulement si tu veux garder des animations personnalisées */
+
+.rotate-hover:hover img {
+  transform: rotate(2deg) scale(1.05);
+  transition: transform 0.5s ease;
+}

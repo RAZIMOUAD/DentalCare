@@ -1,53 +1,69 @@
-<!-- Footer complet avec SVG HeroIcons valides -->
-<footer class="relative bg-white/30 backdrop-blur-xl border-t border-[#d0f5e2] shadow-inner text-[#357d80] py-10 px-6 sm:px-10 overflow-hidden">
-  <!-- Couche 1 : dégradé -->
-  <div class="absolute inset-0 z-[-2] bg-gradient-to-tr from-[#f2fcfb] via-[#e6f8f7] to-[#d4f1ef]"></div>
+<footer class="bg-[#408d8e] text-white pt-20 pb-10 px-6 md:px-16">
+  <div class="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12">
 
-  <!-- Couche 2 : motif SVG -->
-  <div class="absolute inset-0 z-[-1] opacity-100 bg-[url('/assets/groovy-soft.svg')] bg-[length:60px_60px] bg-repeat"></div>
-
-  <!-- Dégradé en surcouche douce -->
-  <div class="absolute inset-0 z-0 bg-gradient-to-br from-white/60 via-[#f0fdfa]/50 to-white/30 backdrop-blur-sm"></div>
-
-  <div class="relative z-10 max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
-    <!-- À propos -->
+    <!-- Brand & Signature -->
     <div>
-      <h3 class="text-[#1f9ea1] text-xl font-bold mb-4">DentalCare 🦷</h3>
-      <p class="text-sm leading-relaxed">
-        Cabinet dentaire inspiré par la douceur et la précision.<br />
-        Une technologie de pointe dans un esprit marocain chaleureux.
+      <h2 class="text-3xl font-semibold mb-4">
+        <a routerLink="/home">Anas L3WER</a>
+      </h2>
+      <p class="text-sm leading-relaxed text-gray-100">
+        Votre sourire est notre priorité. Profitez d'une expertise dentaire de pointe dans un cadre chaleureux.
       </p>
+      <img src="assets/images/signature.png" alt="Signature" class="mt-6 w-32" />
+      <div class="mt-6 flex items-center gap-4">
+        <img src="assets/images/footer-1.jpg" alt="Dr" class="w-14 h-14 rounded-lg object-cover shadow-md" />
+        <div>
+          <h4 class="text-white font-medium">Dr. Anas L9ray</h4>
+          <span class="text-sm text-gray-300">CEO & Founder</span>
+        </div>
+      </div>
     </div>
 
-    <!-- Coordonnées -->
+    <!-- Useful Links -->
     <div>
-      <h4 class="text-[#1f9ea1] font-semibold mb-3">Coordonnées</h4>
-      <ul class="text-sm space-y-2">
-        <li>📍 123 Rue Ibn Sina, Marrakech</li>
-        <li>📞 +212 6 12 34 56 78</li>
-        <li>✉️ contact.dentalcare.ma</li>
-        <li>🕒 Lun - Sam : 08h30 - 18h30</li>
+      <h3 class="text-xl font-semibold mb-4">Liens utiles</h3>
+      <ul class="space-y-2 text-sm text-gray-200">
+        <li><a routerLink="/about" class="hover:text-cyan-300 transition">À propos</a></li>
+        <li><a routerLink="/services" class="hover:text-cyan-300 transition">Services dentaires</a></li>
+        <li><a routerLink="/dentict" class="hover:text-cyan-300 transition">Nos dentistes</a></li>
+        <li><a routerLink="/home" class="hover:text-cyan-300 transition">FAQs</a></li>
+        <li><a routerLink="/privacy" class="hover:text-cyan-300 transition">Politique de confidentialité</a></li>
+        <li><a routerLink="/services" class="hover:text-cyan-300 transition">Pédiatrie</a></li>
+        <li><a routerLink="/services" class="hover:text-cyan-300 transition">Santé de la femme</a></li>
       </ul>
     </div>
 
-    <!-- Liens & Réseaux -->
+    <!-- Contact Info -->
     <div>
-      <h4 class="text-[#1f9ea1] font-semibold mb-3">Liens rapides</h4>
-      <ul class="text-sm space-y-2 mb-4">
-        <li><a href="#" class="hover:text-[#1f9ea1] transition">Accueil</a></li>
-        <li><a href="#" class="hover:text-[#1f9ea1] transition">Nos soins</a></li>
-        <li><a href="#" class="hover:text-[#1f9ea1] transition">Prendre RDV</a></li>
-        <li><a href="#" class="hover:text-[#1f9ea1] transition">Contact</a></li>
+      <h3 class="text-xl font-semibold mb-4">Contact</h3>
+      <ul class="space-y-4 text-sm text-gray-200">
+        <li class="flex items-start gap-3">
+          <i class="bx bx-phone-call text-xl text-cyan-300"></i>
+          <div>
+            <span class="block font-semibold">Appelez-nous</span>
+            <a href="tel:+212600000000" class="hover:text-cyan-300">+212 6 00 00 00 00</a>
+          </div>
+        </li>
+        <li class="flex items-start gap-3">
+          <i class="bx bx-time-five text-xl text-cyan-300"></i>
+          <div>
+            <span class="block font-semibold">Heures d'ouverture</span>
+            09:00 à 18:00
+          </div>
+        </li>
+        <li class="flex items-start gap-3">
+          <i class="bx bx-map text-xl text-cyan-300"></i>
+          <div>
+            <span class="block font-semibold">Adresse</span>
+            153 Marrakech Doha
+          </div>
+        </li>
       </ul>
-
-      <!-- Réseaux sociaux (SVG FontAwessome valides) -->
-      <img src="/assets/icons/facebook.png" alt="Facebook" width="24" height="24">
-      <img src="/assets/icons/instagram.png" alt="instagram" width="24" height="24">
-
     </div>
-  </div>
-
-  <div class="relative z-10 mt-8 text-center text-xs text-[#357d80]">
-    © 2025 DentalCare | Conçu avec ❤️ à Marrakech.
   </div>
 </footer>
+
+<!-- Copyright -->
+<div class="bg-[#3b7e80] border-t border-[#285d5e] text-center py-5 text-sm text-gray-300">
+  © 2025 <span class="text-cyan-300 font-semibold">LMKMLIN</span> — All Rights Reserved.
+</div>

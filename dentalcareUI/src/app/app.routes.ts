@@ -3,6 +3,7 @@ import { Routes } from '@angular/router';
 import { HomePageComponent } from './features/home/home-page/home-page.component';
 import { authRoutes } from './features/auth/auth.routes';
 import { AuthGuardUser } from './core/guards/auth-user.guard';
+import { PUBLIC_PAGES_ROUTES } from './features/public-pages/ublic-pages.routes';
 
 export const routes: Routes = [
   {
@@ -21,7 +22,7 @@ export const routes: Routes = [
       import('./features/dashboard/dashboard.routes').then(m => m.dashboardRoutes),
 
   },
-
+  ...PUBLIC_PAGES_ROUTES,
   ...authRoutes
   // Ajoute d'autres routes ici
 ];

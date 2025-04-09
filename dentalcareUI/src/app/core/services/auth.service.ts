@@ -45,43 +45,61 @@ export class AuthService {
   login(data: LoginPayload): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.API_URL}/auth/authenticate`, data);
   }
+  // 🟢 Activation du compte
+  activateAccount(token: string): Observable<void> {
+    return this.http.get<void>(`${this.API_URL}/auth/activate-account?token=${token}`);
+  }
+
   // 🔐 Authentification HTTP
   authenticate(credentials: { email: string; password: string }): Observable<{ token: string }> {
     return this.http.post<{ token: string }>(`${this.API_URL}/auth/authenticate`, credentials);
   }
   // 📦 Gestion du token + redirection
   handleLoginResponse(response: { token: string }): void {
-    const token = response.token;
-    localStorage.setItem('authToken', token);
+    try {
+      const token = response.token;
+      localStorage.setItem('authToken', token);
 
-    const decoded: DecodedToken = jwtDecode(token);
-    console.log('🔐 Token décodé :', decoded);
+      const decoded: DecodedToken = jwtDecode(token);
+      console.log('🔐 Token JWT décodé :', decoded);
 
-    if (decoded.role === 'ADMIN' || decoded.roles?.includes('ROLE_ADMIN')) {
-      this.router.navigate(['/dashboard']).then(() => {
-        console.log('✅ Redirection vers Dashboard');
-      });
-    } else if (decoded.role === 'USER' || decoded.roles?.includes('ROLE_USER')) {
-      this.router.navigate(['/user-account']).then(() => {
-        console.log('✅ Redirection vers User account');
-      });
-    } else {
-      this.router.navigate(['/']).then(() => {
-        console.log('✅ Redirection fallback');
-      });
-      console.log('🔎 Token décodé complet :', decoded);
+      if (decoded.role === 'ADMIN' || decoded.roles?.includes('ROLE_ADMIN')) {
+        this.router.navigate(['/dashboard']).then(() =>
+          console.log('✅ Redirection vers Dashboard')
+        );
+      } else if (decoded.role === 'USER' || decoded.roles?.includes('ROLE_USER')) {
+        this.router.navigate(['/user-account']).then(() =>
+          console.log('✅ Redirection vers User account')
+        );
+      } else {
+        this.router.navigate(['/']).then(() =>
+          console.log('✅ Redirection fallback')
+        );
+        console.warn('⚠️ Aucun rôle reconnu. Token :', decoded);
+      }
 
-    }console.log('🔎 Token décodé complet :', decoded);
-
+    } catch (err) {
+      console.error('❌ Erreur lors du traitement du token :', err);
+      this.logout(); // Optionnel : mieux vaut sécuriser
+    }
   }
+
   // 🛠 Gérer les erreurs de façon centralisée
   getErrorMessage(error: HttpErrorResponse): string {
     if (error.status === 401 || error.status === 400) {
+      if (typeof error.error === 'string' && error.error.includes('activé')) {
+        return '⚠️ Votre compte n’est pas encore activé. Vérifiez votre email.';
+      }
       return 'Email ou mot de passe incorrect.';
-    } else {
-      return 'Une erreur est survenue. Veuillez réessayer plus tard.';
     }
+
+    if (error.error?.message?.includes('activé')) {
+      return '⚠️ Votre compte n’est pas encore activé. Vérifiez votre email.';
+    }
+
+    return 'Une erreur est survenue. Veuillez réessayer plus tard.';
   }
+
 // code injecté dans registerComponent
   // 🟢 Inscription
   register(data: RegisterPayload): Observable<AuthResponse> {

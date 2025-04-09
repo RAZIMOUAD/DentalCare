@@ -100,6 +100,9 @@ public class AuthenticationService {
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
+       try{
+
+
         var auth = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
@@ -120,6 +123,12 @@ public class AuthenticationService {
                         .map(Role::getName)
                         .toList())
                 .build();
+       } catch (org.springframework.security.authentication.DisabledException e) {
+           throw new RuntimeException("Votre compte n'est pas encore activé. Veuillez vérifier votre email.");
+       }
+       catch (Exception e) {
+           throw new RuntimeException("Échec de l'authentification. Veuillez vérifier vos identifiants.");
+       }
     }
 
 

@@ -12,7 +12,15 @@ export const authRoutes : Routes = [
     loadComponent: () =>
   import('./register/register.component').then(m => m.RegisterComponent),
   canActivate: [RedirectIfAuthenticatedGuard]
-}
+},
+  {
+    path: 'activate-account',
+    loadComponent: () =>
+      import('./activation-account/activate-account.component').then(
+        (m) => m.ActivateAccountComponent
+      ),
+    canActivate: [RedirectIfAuthenticatedGuard],
+  },
 //  ajouter d'autres routes ici plus tard
 
 ];
