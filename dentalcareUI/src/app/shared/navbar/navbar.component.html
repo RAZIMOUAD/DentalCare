@@ -39,12 +39,12 @@
 
     <!-- Mobile Menu -->
     <div *ngIf="menuOpen" class="lg:hidden mt-4 flex flex-col space-y-3 text-[#357d80] font-medium text-base">
-      <a routerLink="/" class="hover:text-[#147a7d]">Accueil</a>
-      <a routerLink="/about" class="hover:text-[#147a7d]">À propos</a>
-      <a routerLink="/services" class="hover:text-[#147a7d]">Services</a>
-      <a routerLink="/calendar" class="hover:text-[#147a7d]">Calendrier</a>
-      <a routerLink="/contact" class="hover:text-[#147a7d]">Contact</a>
-      <a routerLink="/login" class="bg-[#1f9ea1] text-white px-5 py-2 rounded-full hover:bg-[#147a7d] text-center font-semibold shadow">
+      <a routerLink="/" routerLinkActive="text-blue-700 font-semibold" class="hover:text-[#147a7d]">Accueil</a>
+      <a routerLink="/about" routerLinkActive="text-blue-700 font-semibold" class="hover:text-[#147a7d]">À propos</a>
+      <a routerLink="/services" routerLinkActive="text-blue-700 font-semibold" class="hover:text-[#147a7d]">Services</a>
+      <a routerLink="/calendar" routerLinkActive="text-blue-700 font-semibold" class="hover:text-[#147a7d] transition-colors duration-300">Calendrier</a>
+      <a routerLink="/contact" routerLinkActive="text-blue-700 font-semibold" class="hover:text-[#147a7d]">Contact</a>
+      <a routerLink="/login" routerLinkActive="text-blue-700 font-semibold" class="bg-[#1f9ea1] text-white px-5 py-2 rounded-full hover:bg-[#147a7d] text-center font-semibold shadow">
         LOGIN
       </a>
     </div>

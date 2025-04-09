@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import {CalendarPublicComponent} from './calendar-public/calendar-public.component';
 
 export const PUBLIC_PAGES_ROUTES: Routes = [
   {
@@ -10,6 +11,11 @@ export const PUBLIC_PAGES_ROUTES: Routes = [
     path: 'services',
     loadComponent: () =>
       import('./services/services.component').then(m => m.ServicesComponent)
+  },
+  {
+    path: 'calendar',
+    loadComponent: () =>
+      import('./calendar-public/calendar-public.component').then(m => m.CalendarPublicComponent)
   },
   {
     path: 'contact',

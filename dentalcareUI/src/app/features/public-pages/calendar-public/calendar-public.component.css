@@ -1,0 +1,45 @@
+/* ✅ Animation douce à l’apparition de la section */
+section {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+/* ✅ Icônes Lucide - Animation au hover */
+lucide-icon {
+  transition: transform 0.3s ease;
+}
+lucide-icon:hover {
+  transform: scale(1.1);
+}
+
+/* ✅ FullCalendar tweaks */
+.fc-toolbar-title {
+  font-weight: 600;
+  color: #1d4ed8; /* Bleu médical */
+}
+
+.fc-daygrid-event {
+  border-radius: 6px;
+  font-size: 0.85rem;
+  padding: 4px 6px;
+}
+
+.fc-daygrid-event-dot {
+  background-color: #2563eb !important;
+}
+
+.fc-event-title {
+  white-space: normal !important;
+  font-weight: 500;
+}
+
+/* ✅ Animation fadeIn */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

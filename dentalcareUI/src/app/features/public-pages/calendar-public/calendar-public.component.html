@@ -1,0 +1,61 @@
+<section class="px-4 sm:px-8 py-10 max-w-7xl mx-auto text-gray-800">
+  <!-- 🔵 Titre principal avec icône -->
+  <h2 class="text-3xl sm:text-4xl font-bold text-blue-700 mb-8 text-center flex justify-center items-center gap-3">
+    <lucide-icon name="calendar-days" class="w-8 h-8 text-blue-600"></lucide-icon>
+    Calendrier des Disponibilités
+  </h2>
+
+  <!-- 🧩 Message pour utilisateur non connecté -->
+  <div *ngIf="!isAuthenticated" class="mb-8 text-center bg-blue-50 border border-blue-200 p-5 rounded-xl shadow">
+    <p class="text-blue-800 font-medium flex justify-center items-center gap-2">
+      <lucide-icon name="user-plus" class="w-5 h-5 text-blue-600"></lucide-icon>
+      Connectez-vous ou créez un compte pour réserver un créneau.
+    </p>
+    <a routerLink="/login" class="inline-flex items-center mt-2 text-blue-600 underline hover:text-blue-800 text-sm font-medium">
+      Se connecter
+      <lucide-icon name="chevron-right" class="ml-1 w-4 h-4" />
+    </a>
+  </div>
+
+  <!-- 🔎 Filtres (structure en place pour dev futur) -->
+  <form class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+    <div>
+      <label class="block text-sm font-semibold text-gray-700 mb-1">Type de rendez-vous</label>
+      <select class="block w-full border border-gray-300 rounded-lg p-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <option>Tout afficher</option>
+        <option>Consultation</option>
+        <option>Détartrage</option>
+        <option>Suivi</option>
+      </select>
+    </div>
+    <div>
+      <label class="block text-sm font-semibold text-gray-700 mb-1">Praticien</label>
+      <select class="block w-full border border-gray-300 rounded-lg p-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <option>Dr. Zahra</option>
+        <option>Dr. Hicham</option>
+        <option>Dr. Yassine</option>
+      </select>
+    </div>
+    <div>
+      <label class="block text-sm font-semibold text-gray-700 mb-1">Période</label>
+      <input type="month" class="block w-full border border-gray-300 rounded-lg p-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
+    </div>
+  </form>
+
+  <!-- 🎨 Légende -->
+  <div class="flex flex-wrap gap-6 justify-center items-center text-sm mb-8">
+    <div class="flex items-center gap-2">
+      <span class="w-4 h-4 bg-blue-500 rounded-full shadow-sm"></span>
+      <span class="text-blue-600 font-medium">Disponible</span>
+    </div>
+    <div class="flex items-center gap-2">
+      <span class="w-4 h-4 bg-gray-400 rounded-full shadow-sm"></span>
+      <span class="text-gray-600 font-medium">Réservé</span>
+    </div>
+  </div>
+
+  <!-- 📅 Calendrier -->
+  <div class="bg-white rounded-xl border border-blue-100 shadow-xl p-5 md:p-6">
+    <full-calendar [options]="calendarOptions"></full-calendar>
+  </div>
+</section>
