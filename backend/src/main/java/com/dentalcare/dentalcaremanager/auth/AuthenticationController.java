@@ -1,5 +1,6 @@
 package com.dentalcare.dentalcaremanager.auth;
 
+import com.dentalcare.dentalcaremanager.dto.AccountStatusResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
@@ -45,4 +46,17 @@ public class AuthenticationController {
     ) throws MessagingException {
         service.activateAccount(token);
     }
+
+    @PostMapping("/resend-activation")
+    public ResponseEntity<?> resendActivation(@RequestBody @Valid ResendTokenRequest request) throws MessagingException {
+        service.resendActivationToken(request.getEmail());
+        return ResponseEntity.ok("Un nouveau lien d'activation a été envoyé à votre adresse email.");
+    }
+    @GetMapping("/check-account-status")
+    public ResponseEntity<AccountStatusResponse> checkAccountStatus(
+            @RequestParam String email
+    ) {
+        return ResponseEntity.ok(service.checkAccountStatus(email));
+    }
+
 }

@@ -1,5 +1,6 @@
 package com.dentalcare.dentalcaremanager.auth;
 
+import com.dentalcare.dentalcaremanager.dto.AccountStatusResponse;
 import com.dentalcare.dentalcaremanager.email.EmailService;
 import com.dentalcare.dentalcaremanager.role.Role;
 import com.dentalcare.dentalcaremanager.email.EmailTemplateName;
@@ -43,7 +44,7 @@ public class AuthenticationService {
 
 
     public void register(RegistrationRequest request) throws MessagingException {
-        var userRole = roleRepository.findByName("USER")
+        var userRole = roleRepository.findByName("ROLE_USER")
                 .orElseThrow(() -> new IllegalStateException("ROLE USER not found"));
         var user = User.builder()
                 .firstname(request.getFirstname())
@@ -101,8 +102,6 @@ public class AuthenticationService {
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
        try{
-
-
         var auth = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
@@ -150,4 +149,27 @@ public class AuthenticationService {
         savedToken.setValidatedAt(LocalDateTime.now());
         tokenRepository.save(savedToken);
     }
+
+    @Transactional
+    public void resendActivationToken(String email) throws MessagingException {
+        var user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("Aucun utilisateur trouvé avec cet email"));
+
+        if (user.isEnabled()) {
+            throw new IllegalStateException("Le compte est déjà activé.");
+        }
+
+        sendValidationEmail(user);
+    }
+    public AccountStatusResponse checkAccountStatus(String email) {
+        var user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("Aucun compte trouvé avec l'email : " + email));
+
+        return AccountStatusResponse.builder()
+                .email(user.getEmail())
+                .enabled(user.isEnabled())
+                .build();
+    }
+
+
 }

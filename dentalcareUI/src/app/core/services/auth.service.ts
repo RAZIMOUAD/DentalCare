@@ -2,7 +2,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable } from 'rxjs';
+import { Observable, throwError  } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { jwtDecode } from 'jwt-decode';
 import { environment } from '../../../environments/environment';
 
@@ -45,9 +46,15 @@ export class AuthService {
   login(data: LoginPayload): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.API_URL}/auth/authenticate`, data);
   }
-  // 🟢 Activation du compte
   activateAccount(token: string): Observable<void> {
-    return this.http.get<void>(`${this.API_URL}/auth/activate-account?token=${token}`);
+    return this.http.get<void>(`${this.API_URL}/auth/activate-account`, {
+      params: { token }
+    }).pipe(
+      catchError((error) => {
+        console.error('❌ Erreur d’activation du compte :', error);
+        return throwError(() => error);
+      })
+    );
   }
 
   // 🔐 Authentification HTTP

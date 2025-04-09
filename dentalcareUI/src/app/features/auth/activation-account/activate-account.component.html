@@ -10,7 +10,8 @@
       </p>
     </div>
 
-    <form *ngIf="!token" (ngSubmit)="activate()" class="space-y-4">
+    <!-- Formulaire uniquement si échec ou token manquant -->
+    <form *ngIf="isError" (ngSubmit)="activate()" class="space-y-4">
       <label class="block">
         <span class="text-gray-700">Code reçu par email :</span>
         <input

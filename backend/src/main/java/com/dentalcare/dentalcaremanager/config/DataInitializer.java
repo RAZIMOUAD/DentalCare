@@ -11,8 +11,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -24,28 +26,33 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        // Crée les rôles si inexistants
+        // 🧹 Nettoyage de rôles invalides
+        detachInvalidRoles();
+        deleteInvalidRoles();// 💥
+
+        // ✅ Crée les rôles standard si inexistant
         Role adminRole = createRoleIfNotFound("ROLE_ADMIN");
         Role userRole = createRoleIfNotFound("ROLE_USER");
 
-        // Crée un super utilisateur admin si inexistant
-        Optional<User> adminOpt = userRepository.findByEmail("admin@dentalcare.com");
-        if (adminOpt.isEmpty()) {
-            User admin = User.builder()
-                    .firstname("Super")
-                    .lastname("Admin")
-                    .email("admin@dentalcare.com")
-                    .password(passwordEncoder.encode("AdminPass123"))
-                    .roles(new HashSet<>(Set.of(adminRole)))
-                    .enabled(true)
-                    .accountLocked(false)
-                    .build();
+        // 👤 Crée un super utilisateur admin si inexistant
+        userRepository.findByEmail("admin@dentalcare.com")
+                .ifPresentOrElse(
+                        user -> System.out.println("ℹ️ Admin user already exists."),
+                        () -> {
+                            User admin = User.builder()
+                                    .firstname("Super")
+                                    .lastname("Admin")
+                                    .email("admin@dentalcare.com")
+                                    .password(passwordEncoder.encode("AdminPass123"))
+                                    .roles(Set.of(adminRole))
+                                    .enabled(true)
+                                    .accountLocked(false)
+                                    .build();
 
-            userRepository.save(admin);
-            System.out.println("✅ Admin user created successfully.");
-        } else {
-            System.out.println("ℹ️ Admin user already exists.");
-        }
+                            userRepository.save(admin);
+                            System.out.println("✅ Admin user created successfully.");
+                        }
+                );
     }
 
     private Role createRoleIfNotFound(String roleName) {
@@ -57,5 +64,27 @@ public class DataInitializer implements CommandLineRunner {
                     return roleRepository.save(newRole);
                 });
     }
-}
 
+    // 💥 Supprime les anciens rôles invalides
+    private void deleteInvalidRoles() {
+        roleRepository.findByName("ADMIN").ifPresent(role -> {
+            roleRepository.delete(role);
+            System.out.println("❌ Role 'ADMIN' supprimé.");
+        });
+        roleRepository.findByName("USER").ifPresent(role -> {
+            roleRepository.delete(role);
+            System.out.println("❌ Role 'USER' supprimé.");
+        });
+    }
+    private void detachInvalidRoles() {
+        List<User> users = userRepository.findAll();
+        for (User user : users) {
+            Set<Role> filteredRoles = user.getRoles().stream()
+                    .filter(role -> !role.getName().equals("ADMIN") && !role.getName().equals("USER"))
+                    .collect(Collectors.toSet());
+            user.setRoles(filteredRoles);
+        }
+        userRepository.saveAll(users);
+    }
+
+}

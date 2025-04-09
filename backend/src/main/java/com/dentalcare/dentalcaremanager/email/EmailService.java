@@ -40,18 +40,25 @@ public class EmailService {
             String activationCode,
             String subject
     ) throws MessagingException {
-        String templateName;
-        if (emailTemplate == null) {
-            templateName = "confirm-email";
-        } else {
-            templateName = emailTemplate.getName();
+        // 🔐 Sécurité minimale : vérifie les paramètres essentiels
+        if (to == null || to.isBlank()) {
+            throw new IllegalArgumentException("L'adresse e-mail du destinataire est manquante.");
         }
+        if (emailTemplate == null) {
+            throw new IllegalArgumentException("Le modèle d'email est requis.");
+        }
+
+
+        // 📄 Template name depuis l'Enum sécurisé
+        String templateName = emailTemplate.getName();
+        // ✉️ Préparation du message
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(
                 mimeMessage,
                 MULTIPART_MODE_MIXED,
                 UTF_8.name()
         );
+        // 📦 Variables à injecter dans le template
         Map<String, Object> properties = new HashMap<>();
         properties.put("username", username);
         properties.put("confirmationUrl", confirmationUrl);
@@ -60,14 +67,13 @@ public class EmailService {
         Context context = new Context();
         context.setVariables(properties);
 
+        // 🔧 Configuration de l'e-mail
         helper.setFrom(from);
         helper.setTo(to);
         helper.setSubject(subject);
+        helper.setText(templateEngine.process(templateName, context), true);
 
-        String template = templateEngine.process(templateName, context);
-
-        helper.setText(template, true);
-
+        // 🚀 Envoi de l'email
         mailSender.send(mimeMessage);
     }
 }

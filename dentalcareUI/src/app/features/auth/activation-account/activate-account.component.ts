@@ -1,6 +1,6 @@
 // src/app/features/auth/activate-account/activate-account.component.ts
 
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -24,17 +24,20 @@ export class ActivateAccountComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
-      console.log('🧪 Params reçus :', params);
-      if (params['token']) {
-        this.token = params['token'];
+      const receivedToken = params['token'];
+      if (receivedToken) {
+        this.token = receivedToken;
         this.activate();
+      } else {
+        this.message = '❌ Aucun code d’activation fourni.';
+        this.isError = true;
       }
     });
   }
 
   activate(): void {
-    if (!this.token || this.token.length !== 6) {
-      this.message = '❌ Code invalide.';
+    if (!/^\d{6}$/.test(this.token)) {
+      this.message = '❌ Code invalide. Le code doit contenir 6 chiffres.';
       this.isError = true;
       return;
     }
@@ -44,14 +47,16 @@ export class ActivateAccountComponent implements OnInit {
       next: () => {
         this.isLoading = false;
         this.isError = false;
-        this.message = '✅ Compte activé avec succès. Redirection...';
+        this.message = '✅ Compte activé avec succès. Redirection en cours...';
         setTimeout(() => this.router.navigate(['/login']), 3000);
       },
       error: (err) => {
         this.isLoading = false;
         this.isError = true;
         this.message =
-          err.error?.message || '❌ Code invalide ou expiré. Réessayez.';
+          err?.error?.message?.includes('expired')
+            ? '⏳ Code expiré. Un nouveau code vous a été renvoyé par email.'
+            : '❌ Code invalide ou déjà utilisé.';
       },
     });
   }
