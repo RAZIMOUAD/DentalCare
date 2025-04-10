@@ -2,7 +2,7 @@ spring:
   datasource:
     url: jdbc:postgresql://dentalcare-db-anasrami1845-3ed8.b.aivencloud.com:22819/defaultdb?sslmode=require
     username: avnadmin
-    password: mdp
+    password: AVNS_GQisG85VHveH1f2bb6j
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
