@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5433/dental_app
-    username: username
-    password: password
+    url: jdbc:postgresql://dentalcare-db-anasrami1845-3ed8.b.aivencloud.com:22819/defaultdb?sslmode=require
+    username: avnadmin
+    password: AVNS_GQisG85VHveH1f2bb6j
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -14,20 +14,18 @@ spring:
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
   mail:
-    host: localhost
-    port: 1025
-    username: dentist
-    password: dentist
-    properties:
-      mail:
-        smtp:
-          trust: "*"
-        auth: true
-        starttls:
-          enable: true
-        connectiontimeout: 5000
-        timeout: 3000
-        writetimeout: 5000
+      host: smtp.gmail.com
+      port: 587  # Port pour TLS
+      username: anasramioffice@gmail.com  # Votre adresse Gmail complète
+      password: "gool hajf eqql kgsc"  # Mot de passe d'application généré
+      properties:
+        mail:
+          smtp:
+            auth: true
+            starttls:
+              enable: true  # Activation de TLS
+            ssl:
+              trust: "smtp.gmail.com"  # Nécessaire pour éviter les erreurs SSL
 
 application:
   security:
