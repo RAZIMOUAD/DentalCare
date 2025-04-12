@@ -6,7 +6,7 @@ import { Observable, throwError  } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { jwtDecode } from 'jwt-decode';
 import { environment } from '../../../environments/environment';
-
+import {AUTH_TOKEN_KEY} from '../constants/storage-keys'
 // === Interfaces ===
 export interface RegisterPayload {
   firstname: string;
@@ -36,7 +36,7 @@ export interface AuthResponse {
 @Injectable({providedIn: 'root',})
 export class AuthService {
 
-  private readonly tokenKey = 'authToken';
+  private readonly tokenKey = AUTH_TOKEN_KEY;
   private readonly API_URL = environment.apiUrl;
 
   constructor(private http: HttpClient, private router: Router) {}

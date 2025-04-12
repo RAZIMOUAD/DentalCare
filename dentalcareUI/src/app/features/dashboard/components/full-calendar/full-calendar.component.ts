@@ -8,10 +8,11 @@ import { CalendarOptions, EventClickArg, DateSelectArg, EventInput} from '@fullc
 import { CalendarModalComponent } from '../calendar-modal/calendar-modal.component';
 import { RendezvousService } from '../../../../core/services/rendezvous.service';
 import { RendezVousResponse } from '../../models/rendezvous-response.model';
+import { LucideIconsModule } from '@shared/modules/lucide-icons.module';
 @Component({
   selector: 'app-full-calendar',
   standalone: true,
-  imports: [CommonModule, FullCalendarModule, CalendarModalComponent],
+  imports: [CommonModule, FullCalendarModule, CalendarModalComponent, LucideIconsModule],
   templateUrl: './full-calendar.component.html',
   styleUrls: ['./full-calendar.component.css']
 })
@@ -20,6 +21,9 @@ export class FullCalendarComponent implements OnInit {
   patientName: string = '';
   startTime: string = '';
   endTime: string = '';
+  motif: string = '';
+  type: string = 'CONSULTATION';
+  praticien: string = 'Dr. Zahra';
 
   calendarOptions: CalendarOptions = {
     plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
@@ -41,6 +45,7 @@ export class FullCalendarComponent implements OnInit {
     eventResize: this.handleEventChange.bind(this)
   };
   constructor(private rendezvousService: RendezvousService) {}
+
   ngOnInit(): void {
     const today = new Date().toISOString().split('T')[0];
     this.rendezvousService.getByDate(today).subscribe({
@@ -80,14 +85,22 @@ export class FullCalendarComponent implements OnInit {
 
   }
 // 🔁 Appeler backend plus tard pour persister
-  onAppointmentCreated(event: { patientName: string; startTime: string; endTime: string }): void {
+  onAppointmentCreated(event: {
+    patientName: string;
+    startTime: string;
+    endTime: string;
+    motif: string;
+    type: string;
+    praticien: string;
+  }): void {
     const calendarApi = (document.querySelector('full-calendar') as any)?.getApi();
     if (calendarApi) {
       calendarApi.addEvent({
-        title: event.patientName,
+        title: `${event.patientName} (${event.type})`,
         start: event.startTime,
         end: event.endTime,
-        allDay: false
+        allDay: false,
+        color: 'orange'
       });
     }
     this.resetModal();
@@ -118,5 +131,8 @@ export class FullCalendarComponent implements OnInit {
     this.patientName = '';
     this.startTime = '';
     this.endTime = '';
+    this.motif = '';
+    this.type = 'CONSULTATION';
+    this.praticien = 'Dr. Zahra';
   }
 }

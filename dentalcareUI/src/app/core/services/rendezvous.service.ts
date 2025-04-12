@@ -21,6 +21,21 @@ export class RendezvousService {
     const params = new HttpParams().set('date', date);
     return this.http.get<RendezVousResponse[]>(`${this.api}/rendezvous/by-date`, { params });
   }
+  /** GET tous les RDV d’un mois spécifique (ADMIN ou USER) */
+  getByMonth(year: number, month: number): Observable<RendezVousResponse[]> {
+    return this.http.get<RendezVousResponse[]>(`${this.api}/rendezvous/by-month`, {
+      params: { year, month }
+    });
+  }
+
+  /** 🔍 Récupérer les RDV d’un mois donné à partir d’une date LocalDate (format 'YYYY-MM-DD') */
+  getByMonthDate(date: string): Observable<RendezVousResponse[]> {
+    return this.http.get<RendezVousResponse[]>(`${this.api}/rendezvous/by-month-date`, {
+      params: { date }
+    });
+  }
+
+
 
   /** GET mes RDV (USER connecté) */
   getMyRendezVous(): Observable<RendezVousResponse[]> {
@@ -31,6 +46,16 @@ export class RendezvousService {
   createRendezVous(data: RendezVousRequest): Observable<RendezVousResponse> {
     return this.http.post<RendezVousResponse>(`${this.api}/rendezvous`, data);
   }
+  /** ✅ Confirmer un RDV */
+  confirmRendezVous(id: number): Observable<void> {
+    return this.http.patch<void>(`${this.api}/rendezvous/${id}/confirm`, {});
+  }
+
+  /** ⚠️ Rejeter un RDV */
+  rejectRendezVous(id: number): Observable<void> {
+    return this.http.patch<void>(`${this.api}/rendezvous/${id}/reject`, {});
+  }
+
 
   /** DELETE RDV par ID (ADMIN) */
   deleteById(id: number): Observable<void> {

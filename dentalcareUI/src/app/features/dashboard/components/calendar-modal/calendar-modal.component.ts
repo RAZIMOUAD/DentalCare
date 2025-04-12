@@ -20,22 +20,41 @@ export class CalendarModalComponent {
   /** Date et heure de fin */
   @Input() endTime: string = '';
   @Output() endTimeChange = new EventEmitter<string>();
-  /** Événement déclenché lors de la soumission */
+
+  /** 🗨️ Motif du rendez-vous */
+  @Input() motif: string = '';
+  @Output() motifChange = new EventEmitter<string>();
+  /** 🦷 Type de rendez-vous */
+  @Input() type: string = 'CONSULTATION';
+  @Output() typeChange = new EventEmitter<string>();
+
+  /** 👨‍⚕️ Praticien assigné */
+  @Input() praticien: string = 'Dr. Zahra';
+  @Output() praticienChange = new EventEmitter<string>();
+
+
+  /** 📤 Soumission du formulaire */
   @Output() createAppointment = new EventEmitter<{
     patientName: string;
     startTime: string;
     endTime: string;
+    motif: string;
+    type: string;
+    praticien: string;
   }>();
 
   /** Événement déclenché lorsqu'on ferme la modale */
   @Output() closeModal = new EventEmitter<void>();
 
   submit(): void {
-    if (this.patientName && this.startTime && this.endTime) {
+    if (this.patientName && this.startTime && this.endTime && this.motif && this.type && this.praticien) {
       this.createAppointment.emit({
         patientName: this.patientName,
         startTime: this.startTime,
-        endTime: this.endTime
+        endTime: this.endTime,
+        motif: this.motif,
+        type: this.type,
+        praticien: this.praticien
       });
     }
   }

@@ -1,54 +1,146 @@
-/* === ✅ STRUCTURE DU TABLEAU === */
+/* ============================
+   📁 dashboard-rendezvous.component.css
+   🎯 Style complémentaire pour page agenda admin
+   ============================ */
+
+
+@keyframes fadeInList {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ✅ Tableau visuel propre */
 table {
-  min-width: 100%;
-  border-collapse: collapse;
-  font-family: 'Inter', sans-serif;
-  font-size: 0.95rem;
-  background-color: white;
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+  font-size: 0.9rem;
+}
+
+th {
+  background: #f9fafb;
+  text-transform: uppercase;
+  font-weight: 600;
+  font-size: 0.75rem;
+  color: #6b7280;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.rdv-item td {
+  border-bottom: 1px solid #f3f4f6;
+  transition: background 0.2s ease-in-out;
+}
+
+.rdv-item:hover {
+  background: #f9fafb;
+}
+
+/* 📆 FullCalendar wrapper */
+full-calendar {
+  min-height: 400px;
   border-radius: 0.75rem;
   overflow: hidden;
+  border: 1px solid #e5e7eb;
 }
 
-/* === ✅ EFFET HOVER SUR LES LIGNES === */
-.rdv-item {
-  transition: background-color 0.25s ease;
-}
-.rdv-item:hover {
-  background-color: #f3f4f6; /* Tailwind: hover:bg-gray-100 */
-}
-
-/* === ✅ CELLULES ET EN-TÊTES === */
-td, th {
-  padding: 0.75rem 1rem;
-  transition: all 0.2s ease-in-out;
-  text-align: left;
-  vertical-align: middle;
-}
-
-thead {
-  background-color: #eff6ff; /* Tailwind: bg-blue-50 */
-  color: #1e3a8a;            /* Tailwind: text-blue-900 */
+/* 🎨 Couleurs de statut personnalisées */
+.status-confirmed {
+  color: #16a34a;
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
+}
+.status-pending {
+  color: #f59e0b;
+  font-weight: 600;
+}
+.status-cancelled {
+  color: #dc2626;
+  font-weight: 600;
 }
 
-/* === ✅ ARRONDI DES EN-TÊTES DU TABLEAU === */
-thead tr:first-child th:first-child {
-  border-top-left-radius: 0.75rem;
-}
-thead tr:first-child th:last-child {
-  border-top-right-radius: 0.75rem;
-}
-
-/* === ✅ RÉACTIVITÉ MOBILE === */
+/* 🧩 Responsivité tableau */
 @media (max-width: 768px) {
-  td, th {
-    padding: 0.5rem;
+  table thead {
+    display: none;
+  }
+  table tr {
+    display: block;
+    margin-bottom: 1rem;
+    background: #fff;
+    border-radius: 0.75rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    padding: 1rem;
+  }
+  table td {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
     font-size: 0.875rem;
   }
-
-  table {
-    font-size: 0.85rem;
+  table td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: #6b7280;
   }
+}
+
+/* 🧠 Titre page */
+h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #1e3a8a;
+  font-size: 1.875rem;
+}
+
+/* 🆘 Message erreur */
+.error-message {
+  color: #dc2626;
+  font-weight: 500;
+  text-align: center;
+  margin-top: 1rem;
+}
+
+/* ⌛ Loading */
+.loading-message {
+  color: #2563eb;
+  font-weight: 500;
+  text-align: center;
+  margin-top: 1rem;
+}
+
+/* 🧼 Actions */
+button.delete-btn {
+  color: #dc2626;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+button.delete-btn:hover {
+  color: #b91c1c;
+}
+/* DYNAMIQUE TRAITEMENT */
+
+.fc-status-confirmé {
+  background-color: #dcfce7 !important;
+  border-left: 4px solid #16a34a !important;
+  color: #166534 !important;
+}
+
+.fc-status-en_attente {
+  background-color: #fef9c3 !important;
+  border-left: 4px solid #f59e0b !important;
+  color: #92400e !important;
+}
+
+.fc-status-annulé,
+.fc-status-annule {
+  background-color: #fee2e2 !important;
+  border-left: 4px solid #dc2626 !important;
+  color: #991b1b !important;
 }

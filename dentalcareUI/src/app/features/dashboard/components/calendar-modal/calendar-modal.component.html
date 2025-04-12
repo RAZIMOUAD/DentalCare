@@ -1,20 +1,39 @@
-<!-- Modal overlay -->
+<!-- ✅ MODAL ADMIN AVANCÉ POUR AJOUT DE RDV -->
 <div class="fixed inset-0 bg-black bg-opacity-40 backdrop-blur-sm flex items-center justify-center z-50">
 
-  <!-- Modal box -->
-  <div class="bg-white rounded-xl shadow-xl w-full max-w-md p-6 animate-fade-in">
-
+  <div class="bg-white rounded-xl shadow-xl w-full max-w-2xl p-6 animate-fade-in">
     <!-- Titre -->
-    <h3 class="text-xl font-semibold text-gray-800 mb-4">Ajouter un rendez-vous</h3>
+    <h3 class="text-2xl font-semibold text-gray-800 mb-6 text-center">
+      Ajouter un rendez-vous patient
+    </h3>
 
     <!-- Formulaire -->
-    <form (ngSubmit)="submit()" #modalForm="ngForm" class="space-y-4">
+    <form (ngSubmit)="submit()"  class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
       <!-- Nom du patient -->
-      <div>
+      <div class="col-span-1">
         <label class="block text-sm font-medium text-gray-700 mb-1">Nom du patient</label>
         <input type="text" [(ngModel)]="patientName" (ngModelChange)="patientNameChange.emit($event)" name="patientName" required
                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+      </div>
+
+      <!-- Type de rendez-vous -->
+      <div class="col-span-1">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Type de rendez-vous</label>
+        <select [(ngModel)]="type" name="typeRdv" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+          <option value="CONSULTATION">Consultation</option>
+          <option value="DETARTRAGE">Détartrage</option>
+          <option value="SUIVI">Suivi</option>
+          <option value="AUTRE">Autre</option>
+        </select>
+      </div>
+
+      <!-- Motif -->
+      <div class="col-span-2">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Motif du rendez-vous</label>
+        <textarea [(ngModel)]="motif" name="motif" rows="2"
+                  class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Ex: douleur, contrôle annuel, soins..."></textarea>
       </div>
 
       <!-- Heure de début -->
@@ -31,14 +50,22 @@
                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
       </div>
 
+      <!-- Praticien (libre ou pré-défini) -->
+      <div class="col-span-1">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Praticien</label>
+        <input type="text" [(ngModel)]="praticien" name="praticien"
+               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+               placeholder="Dr Zahra">
+      </div>
+
       <!-- Boutons -->
-      <div class="flex justify-end pt-4 space-x-3">
+      <div class="col-span-2 flex justify-end pt-2 space-x-4">
         <button type="button" (click)="close()"
                 class="text-gray-500 hover:text-gray-700 text-sm">Annuler</button>
 
         <button type="submit"
                 class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg">
-          Ajouter
+          Ajouter le rendez-vous
         </button>
       </div>
 

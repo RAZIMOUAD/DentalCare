@@ -1,42 +1,59 @@
-<!-- 🌐 Section principale avec padding élégant -->
-<section class="px-4 py-6 sm:px-6 lg:px-8 w-full h-full relative bg-gradient-to-br from-blue-50 via-white to-white rounded-lg">
+<section class="px-4 py-8 sm:px-8 lg:px-16 w-full h-full relative bg-gradient-to-br from-blue-50 via-white to-white rounded-3xl">
 
-  <!-- 📦 Conteneur du calendrier -->
-  <div class="bg-white shadow-2xl rounded-2xl p-6 md:p-8 border border-gray-100">
+  <!-- 📦 Conteneur principal -->
+  <div class="bg-white shadow-2xl rounded-3xl p-6 sm:p-10 border border-blue-100">
 
-    <!-- 🧠 Header du calendrier -->
-    <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-2 mb-6">
-      <h2 class="text-2xl md:text-3xl font-bold text-blue-900">📅 Calendrier du cabinet</h2>
-      <span class="text-sm text-gray-500 italic">* Cliquez ou déplacez pour gérer vos créneaux</span>
+    <!-- 🧠 En-tête du calendrier -->
+    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">
+      <h2 class="text-3xl font-extrabold text-blue-800 flex items-center gap-2">
+        <lucide-icon name="calendar-days" class="w-7 h-7 text-blue-600"></lucide-icon>
+        Calendrier du cabinet
+      </h2>
+      <span class="text-sm text-blue-500 italic flex items-center gap-2">
+        <lucide-icon name="info" class="w-4 h-4 text-blue-400"></lucide-icon>
+        Cliquez ou glissez-déposez pour gérer vos créneaux
+      </span>
     </div>
 
-    <!-- 📅 Calendrier FullCalendar intégré -->
-    <full-calendar
-      [options]="calendarOptions"
-      class="rounded-xl overflow-hidden border border-gray-200 shadow-md fc-theme-standard"
-    ></full-calendar>
+    <!-- 📅 Calendrier intégré FullCalendar -->
+    <div class="border border-gray-200 rounded-xl overflow-hidden shadow-lg">
+      <full-calendar
+        [options]="calendarOptions"
+        class="fc-theme-standard"
+      ></full-calendar>
+    </div>
 
-    <!-- 🗒️ Légende (à venir) -->
-    <div class="mt-6">
-      <h3 class="text-md font-semibold text-gray-700 mb-2">Légende :</h3>
-      <div class="flex items-center gap-4 text-sm text-gray-600">
-        <div class="flex items-center gap-2"><span class="w-4 h-4 rounded bg-orange-400"></span> En attente</div>
-        <div class="flex items-center gap-2"><span class="w-4 h-4 rounded bg-green-500"></span> Confirmé</div>
-        <div class="flex items-center gap-2"><span class="w-4 h-4 rounded bg-red-500"></span> Annulé</div>
-        <!-- 🔄 Ajoute ici d'autres statuts si besoin -->
+    <!-- 🧩 Légende des statuts -->
+    <div class="mt-8">
+      <h3 class="text-lg font-semibold text-gray-700 mb-3 flex items-center gap-2">
+        <lucide-icon name="list" class="w-5 h-5 text-gray-500"></lucide-icon>
+        Légende des statuts
+      </h3>
+      <div class="flex flex-wrap gap-6 text-sm text-gray-600">
+        <div class="flex items-center gap-2">
+          <span class="w-4 h-4 rounded-full bg-orange-400 shadow"></span> En attente
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="w-4 h-4 rounded-full bg-green-500 shadow"></span> Confirmé
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="w-4 h-4 rounded-full bg-red-500 shadow"></span> Annulé
+        </div>
+        <!-- ➕ Ajouter d'autres couleurs au besoin -->
       </div>
     </div>
   </div>
 
-  <!-- ✅ Modale dynamique d'ajout de RDV -->
+  <!-- 💬 Modale d'ajout de rendez-vous -->
   <app-calendar-modal
     *ngIf="showModal"
     [(patientName)]="patientName"
     [(startTime)]="startTime"
     [(endTime)]="endTime"
+    [(motif)]="motif"
+    [(type)]="type"
+    [(praticien)]="praticien"
     (createAppointment)="onAppointmentCreated($event)"
     (closeModal)="closeModal()"
   ></app-calendar-modal>
 </section>
-<!-- À venir : modale pour ajout détaillé -->
-<!-- À venir : légende des couleurs (disponible, réservé, annulé, etc.) -->

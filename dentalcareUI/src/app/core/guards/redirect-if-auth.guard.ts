@@ -1,10 +1,11 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { jwtDecode } from 'jwt-decode';
+import { AUTH_TOKEN_KEY } from '../constants/storage-keys';
 
 export const RedirectIfAuthenticatedGuard: CanActivateFn = () => {
   const router = inject(Router);
-  const token = localStorage.getItem('authToken');
+  const token = localStorage.getItem(AUTH_TOKEN_KEY);
 
   if (!token) {
     return true; // Pas connecté → peut accéder à login/register

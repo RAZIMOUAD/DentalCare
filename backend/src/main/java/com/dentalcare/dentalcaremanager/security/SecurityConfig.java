@@ -42,11 +42,10 @@ public class SecurityConfig {
                                 "/swagger-ui.html"
                         ).permitAll()
 
-                        // 🔐 Routes réservées aux ADMIN uniquement
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        // 🟢 Accès aux endpoints des rendez-vous
+                        .requestMatchers("/api/v1/rendezvous/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_USER")
 
-                        // 🔐 Routes réservées aux USER uniquement
-                        .requestMatchers("/user/**").hasRole("USER")
+                        .requestMatchers("/api/v1/admin/**").hasAuthority("ROLE_ADMIN")
 
                         // 🔒 Toute autre requête doit être authentifiée
                         .anyRequest().authenticated()

@@ -5,4 +5,5 @@ export interface RendezVousResponse {
   heureFin: string;         // 'HH:mm'
   status: string;           // e.g. "EN_ATTENTE"
   patientFullName: string;  // Construit côté backend
+  description?: string;
 }

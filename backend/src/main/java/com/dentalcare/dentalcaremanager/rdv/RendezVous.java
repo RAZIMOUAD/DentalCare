@@ -38,5 +38,12 @@ public class RendezVous {
     private String motif;
 
     private boolean archive;
+
+    // ✅ Type de rendez-vous : Consultation, Détartrage, etc.
+    @Enumerated(EnumType.STRING)
+    private TypeRdv type;
+
+    // ✅ Facultatif : pour futur gestion multidocteurs
+    private String praticien; // ex: "Dr. Zahra"
 }
 

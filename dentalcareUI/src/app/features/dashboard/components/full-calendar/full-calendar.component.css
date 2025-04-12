@@ -1,48 +1,96 @@
-:host {
-  display: block;
-  height: 100%;
+/* ✅ full-calendar.component.css */
+
+/* 🎬 Apparition douce du conteneur calendrier */
+@keyframes fadeInSlideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-/* Adapter la taille du calendrier à la hauteur disponible */
-full-calendar {
-  width: 100%;
-  min-height: 600px;
+.calendar-appear {
+  animation: fadeInSlideUp 0.5s ease-out;
 }
 
-/* Customisation douce des entêtes de jour */
-.fc-col-header-cell {
-  background-color: #f9fafb;
-  color: #1f2937;
-  font-weight: 500;
-  font-size: 14px;
-  padding: 10px 0;
-}
-
-/* Améliorer le contraste des cases horaires */
-.fc-timegrid-slot {
-  background-color: #ffffff;
-  border-color: #e5e7eb;
-}
-
-/* Style des événements */
-.fc-event {
-  background-color: #2563eb;
-  border: none;
-  color: white;
-  font-size: 13px;
-  border-radius: 6px;
-  padding: 2px 6px;
-}
-
-/* Hover doux */
+/* 🌟 Surbrillance au survol d’un créneau pour l’admin */
 .fc-event:hover {
-  background-color: #1d4ed8;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.4);
+  transform: scale(1.02);
+  transition: all 0.2s ease-in-out;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
-/* Bordures des grilles */
-.fc .fc-scrollgrid,
-.fc .fc-scrollgrid-section {
-  border: none;
+/* 🎯 Animation pour modale (fade + zoom) */
+@keyframes zoomFadeIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.modal-zoom {
+  animation: zoomFadeIn 0.3s ease-out;
+}
+
+/* 🔵 Badge de statut (confirmé, en attente, annulé) */
+.status-badge {
+  padding: 0.2rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  display: inline-block;
+}
+.status-en-attente {
+  background-color: #facc15; /* jaune */
+  color: #92400e;
+}
+.status-confirme {
+  background-color: #4ade80; /* vert */
+  color: #166534;
+}
+.status-annule {
+  background-color: #f87171; /* rouge */
+  color: #7f1d1d;
+}
+
+/* 📆 Effet subtil d’ombre autour du calendrier */
+.fc .fc-scrollgrid {
+  border-radius: 0.75rem;
+  overflow: hidden;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+}
+
+/* 🌀 Animation d’apparition des événements dans le calendrier */
+.fc-event {
+  animation: fadeInSlideUp 0.3s ease-out;
+}
+
+/* 🧩 Design pro des boutons dans la modale */
+.btn-rounded {
+  border-radius: 0.75rem;
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+.btn-primary {
+  background-color: #2563eb;
+  color: white;
+}
+.btn-primary:hover {
+  background-color: #1d4ed8;
+}
+
+/* 💡 Icônes Lucide dans les titres */
+lucide-icon {
+  vertical-align: middle;
+  margin-top: -2px;
 }

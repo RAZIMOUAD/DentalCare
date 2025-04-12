@@ -25,6 +25,8 @@ import java.time.LocalTime;
 
         private String nomPatient;
         // ✅ On extrait seulement le nom complet
+        private String type;
+    private String praticien;
 
 
     public static RendezVousResponse fromEntity(RendezVous rdv) {
@@ -34,6 +36,8 @@ import java.time.LocalTime;
                 .heureDebut(rdv.getHeureDebut())
                 .heureFin(rdv.getHeureFin())
                 .status(rdv.getStatus().name())
+                .type(rdv.getType() != null ? rdv.getType().name() : null)
+                .praticien(rdv.getPraticien())
                 .nomPatient(rdv.getPatient() != null ? rdv.getPatient().getFullName() : "Inconnu")
                 .build();
     }

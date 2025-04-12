@@ -1,10 +1,11 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { jwtDecode } from 'jwt-decode';
+import {AUTH_TOKEN_KEY} from '../constants/storage-keys';
 
 export const AuthGuardAdmin: CanActivateFn = () => {
   const router = inject(Router);
-  const token = localStorage.getItem('authToken');
+  const token = localStorage.getItem(AUTH_TOKEN_KEY);
 
   // Pas de token → on bloque
   if (!token) {
