@@ -1,20 +1,25 @@
 // src/app/features/user-account/user-account.routes.ts
 
 import { Routes } from '@angular/router';
-import { AuthGuardUser} from '../../core/guards/auth-user.guard';
+import { AuthGuardUser } from '../../core/guards/auth-user.guard';
+import { UserLayoutComponent } from '../../layouts/user-layout/user-layout.component';
 
 export const USER_ACCOUNT_ROUTES: Routes = [
   {
     path: '',
+    component: UserLayoutComponent,
     canActivate: [AuthGuardUser],
-    loadComponent: () =>
-      import('./user-account.component').then(m => m.UserAccountComponent),
     children: [
-      // 🧩 Ajoutez ici vos sous-pages (ex: dashboard, rendez-vous, profil, etc.)
-      // {
-      //   path: 'dashboard',
-      //   loadComponent: () => import('./dashboard/dashboard.component').then(m => m.DashboardComponent)
-      // }
-    ],
-  },
+      {
+        path: '',
+        loadComponent: () =>
+          import('./user-account.component').then(m => m.UserAccountComponent),
+      },
+      {
+        path: '',
+        pathMatch: 'full',
+        redirectTo: 'rendezvous'
+      }
+    ]
+  }
 ];

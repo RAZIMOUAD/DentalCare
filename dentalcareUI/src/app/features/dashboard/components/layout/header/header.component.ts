@@ -15,7 +15,7 @@ export class HeaderComponent {
   @Output() logout = new EventEmitter<void>();
 
   /**
-   * Déclenche la demande de déconnexion (sera captée par dashboard.component.ts)
+   * Déclenche la demande de déconnexion (sera captée par dashboard-layout.component.ts)
    */
   onLogout(): void {
     this.logout.emit();

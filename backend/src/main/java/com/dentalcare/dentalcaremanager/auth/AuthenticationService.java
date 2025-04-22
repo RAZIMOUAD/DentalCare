@@ -10,6 +10,7 @@ import com.dentalcare.dentalcaremanager.user.Token;
 import com.dentalcare.dentalcaremanager.user.TokenRepository;
 import com.dentalcare.dentalcaremanager.user.User;
 import com.dentalcare.dentalcaremanager.user.UserRepository;
+import com.dentalcare.dentalcaremanager.service.PatientService;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,7 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.List;
+
 import java.util.Set;
 
 @Service
@@ -37,7 +38,7 @@ public class AuthenticationService {
     private final EmailService emailService;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
-
+    private final PatientService patientService;
 
     @Value("${application.mailing.frontend.activation-url}")
     private String activationUrl;
@@ -54,10 +55,10 @@ public class AuthenticationService {
                 .accountLocked(false)
                 .roles(Set.of(userRole))
                 .enabled(false)
-
                 .build();
         userRepository.save(user);
         sendValidationEmail(user);
+
     }
 
     private void sendValidationEmail(User user) throws MessagingException {
@@ -135,7 +136,7 @@ public class AuthenticationService {
     public void activateAccount(String token) throws MessagingException {
         Token savedToken = tokenRepository.findByToken(token)
                 // todo exception has to be defined
-                .orElseThrow(() -> new RuntimeException("Invalid token"));
+                .orElseThrow(() -> new RuntimeException("Token d’activation invalide."));
         if (LocalDateTime.now().isAfter(savedToken.getExpiresAt())) {
             sendValidationEmail(savedToken.getUser());
             throw new RuntimeException("Activation token has expired. A new token has been send to the same email address");
@@ -148,6 +149,9 @@ public class AuthenticationService {
 
         savedToken.setValidatedAt(LocalDateTime.now());
         tokenRepository.save(savedToken);
+        // ✅ Création du patient **seulement si l'utilisateur est activé**
+        patientService.createPatientForUser(user);
+
     }
 
     @Transactional
@@ -170,6 +174,4 @@ public class AuthenticationService {
                 .enabled(user.isEnabled())
                 .build();
     }
-
-
 }

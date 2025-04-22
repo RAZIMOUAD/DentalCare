@@ -1,0 +1,29 @@
+<section class="p-6 md:p-10 bg-white min-h-screen rounded-2xl shadow-sm">
+  <!-- ✅ En-tête -->
+  <div class="flex justify-between items-center mb-6 border-b pb-4">
+    <div>
+      <h1 class="text-3xl font-bold text-blue-900 flex items-center gap-2">
+        <lucide-icon name="user-check" class="w-6 h-6 text-blue-600"></lucide-icon>
+        Gestion des Patients
+      </h1>
+      <p class="text-sm text-gray-500 italic">Suivez et gérez tous vos patients.</p>
+    </div>
+
+    <!-- ✅ Bouton de bascule formulaire/liste -->
+    <button
+      (click)="toggleForm()"
+      class="bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700 transition"
+    >
+      {{ showForm ? '↩ Retour à la liste' : '+ Ajouter un patient' }}
+    </button>
+  </div>
+
+  <!-- ✅ Zone dynamique : soit formulaire soit liste -->
+  <div *ngIf="showForm; else patientsList">
+    <app-patient-form (created)="handlePatientCreated()"></app-patient-form>
+  </div>
+
+  <ng-template #patientsList>
+    <app-patients-list></app-patients-list>
+  </ng-template>
+</section>

@@ -1,44 +1,29 @@
-<!-- sidebar.component.html -->
-<div class="h-screen bg-white shadow-lg border-r border-gray-200 transition-all duration-500 ease-in-out"
-     [ngClass]="{
-       'w-64': isOpen,
-       'w-20': !isOpen
-     }">
-
-  <!-- Logo + Toggle -->
-  <div class="p-4 flex items-center justify-between border-b border-gray-100">
-    <span *ngIf="isOpen" class="text-2xl font-extrabold text-blue-600 tracking-tight">DentalCare</span>
-    <button (click)="onToggleSidebar()"
-            class="text-gray-400 hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300 rounded">
-      <i class="fas" [ngClass]="isOpen ? 'fa-chevron-left' : 'fa-chevron-right'"></i>
+<aside [class.open]="isOpen" class="h-screen bg-white border-r shadow-md w-64 md:block hidden transition-all duration-300">
+  <div class="flex items-center justify-between px-4 py-4 border-b">
+    <h2 class="text-xl font-bold text-blue-700">DentalCare</h2>
+    <button (click)="onToggleSidebar()" class="md:hidden">
+      <lucide-icon name="X" class="w-6 h-6 text-gray-700"></lucide-icon>
     </button>
   </div>
 
-  <!-- Navigation -->
-  <nav class="mt-4">
-    <ul class="flex flex-col gap-1">
+  <nav class="mt-4 px-4">
+    <ul class="space-y-2">
       <li *ngFor="let item of navItems">
         <a [routerLink]="item.route"
-           routerLinkActive="bg-blue-100 text-blue-800"
-           class="flex items-center gap-4 px-4 py-2 rounded transition-all duration-200 text-gray-700 hover:bg-blue-50 hover:text-blue-600 font-medium"
-           [ngClass]="{ 'justify-center': !isOpen, 'text-base': isOpen, 'text-lg': !isOpen }"
-           [attr.aria-label]="!isOpen ? item.label : null">
-          <span class="text-xl">{{ item.icon }}</span>
-          <span *ngIf="isOpen" class="whitespace-nowrap">{{ item.label }}</span>
+           routerLinkActive="bg-blue-100 text-blue-700"
+           class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-blue-50 transition">
+          <lucide-icon [name]="item.icon" class="w-5 h-5 text-gray-600"></lucide-icon>
+          <span class="text-gray-800 font-medium">{{ item.label }}</span>
         </a>
       </li>
     </ul>
   </nav>
 
-  <!-- Déconnexion -->
-  <div class="absolute bottom-6 w-full px-4">
-    <button
-      class="flex items-center gap-3 w-full text-left text-gray-500 hover:text-red-500 transition-all duration-200"
-      [ngClass]="{ 'justify-center': !isOpen }"
-      (click)="onLogout()"
-    >
-      <i class="fas fa-sign-out-alt text-lg"></i>
-      <span *ngIf="isOpen" class="text-sm font-semibold">Déconnexion</span>
+  <div class="absolute bottom-0 w-full px-4 py-4 border-t">
+    <button (click)="onLogout()"
+            class="flex items-center gap-3 text-red-600 hover:text-red-800 transition">
+      <lucide-icon name="LogOut" class="w-5 h-5"></lucide-icon>
+      <span>Déconnexion</span>
     </button>
   </div>
-</div>
+</aside>

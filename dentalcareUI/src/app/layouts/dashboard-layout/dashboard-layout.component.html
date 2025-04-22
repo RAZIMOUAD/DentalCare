@@ -1,0 +1,20 @@
+<div class="flex h-screen overflow-hidden [@fadeInDashboard]">
+  <!-- 🧭 Sidebar -->
+  <app-sidebar class="w-64 bg-white border-r shadow-sm"
+  *ngIf="isSidebarOpen"
+  (toggle)="toggleSidebar()" ></app-sidebar>
+
+  <!-- 📦 Main content -->
+  <div class="flex-1 flex flex-col overflow-auto">
+    <!-- 🧢 Header -->
+    <app-header
+      [fullName]="fullName"
+      (logout)="logout()"
+    ></app-header>
+
+    <!-- 🧩 Contenu principal des pages enfants -->
+    <main class="p-4 md:p-6 bg-gray-50 min-h-[calc(100vh-64px)]">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>
