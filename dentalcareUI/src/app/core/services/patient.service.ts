@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { Observable } from 'rxjs';
+import {map, Observable} from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 /** 🎯 Représente un patient côté frontend */
@@ -11,18 +11,27 @@ export interface PatientResponse {
   prenom: string;
   email: string;
   cin: string;
+  genre?: string;
+  dateNaissance?: string; // LocalDate est automatiquement serialisé en string (format ISO)
+  adresse?: string;
   enabled: boolean;
   createdByAdmin: boolean;
+  dateDesactivation?: string;
   userId?: number;
 }
 
+
 /** 📦 Structure de réponse paginée depuis le backend */
-export interface PaginatedResponse<T> {
-  content: T[];
-  totalElements: number;
-  totalPages: number;
-  number: number; // page actuelle
-  size: number;
+export interface PagedModel<T> {
+  _embedded: {
+    patientResponseList: T[];
+  };
+  page: {
+    size: number;
+    totalElements: number;
+    totalPages: number;
+    number: number;
+  };
 }
 
 @Injectable({
@@ -58,6 +67,10 @@ export class PatientService {
   getAllPatients(): Observable<PatientResponse[]> {
     return this.http.get<PatientResponse[]>(this.baseUrl);
   }
+  getPatientById(id: number): Observable<PatientResponse> {
+    return this.http.get<PatientResponse>(`${this.baseUrl}/${id}`);
+  }
+
 
   /**
    * 🔁 Récupère les patients de manière paginée + filtrée
@@ -66,22 +79,37 @@ export class PatientService {
     page = 0,
     size = 10,
     filters?: { nom?: string; createdByAdmin?: boolean; enabled?: boolean }
-  ): Observable<PaginatedResponse<PatientResponse>> {
-    const params: any = {
-      page,
-      size
+  ): Observable<{
+    patients: PatientResponse[];
+    page: {
+      totalElements: number;
+      totalPages: number;
+      number: number;
+      size: number;
     };
+  }> {
+    const params: any = { page, size };
+    if (filters?.nom) params.nom = filters.nom;
+    if (filters?.createdByAdmin !== undefined) params.createdByAdmin = filters.createdByAdmin;
+    if (filters?.enabled !== undefined) params.enabled = filters.enabled;
 
-    if (filters?.nom) {
-      params.nom = filters.nom;
-    }
-    if (filters?.createdByAdmin !== undefined) {
-      params.createdByAdmin = filters.createdByAdmin;
-    }
-    if (filters?.enabled !== undefined) {
-      params.enabled = filters.enabled;
-    }
-
-    return this.http.get<PaginatedResponse<PatientResponse>>(`${this.baseUrl}/paginated`, { params });
+    return this.http.get<PagedModel<PatientResponse>>(`${this.baseUrl}/paginated`, { params }).pipe(
+      map(response => ({
+        patients: response._embedded?.patientResponseList || [],
+        page: response.page
+      }))
+    );
   }
+
+
+
+  /* Update des patients depuis backend */
+  updatePatient(id: number, payload: any): Observable<PatientResponse> {
+    return this.http.put<PatientResponse>(`${this.baseUrl}/${id}`, payload);
+  }
+
+  deletePatient(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/${id}`);
+  }
+
 }

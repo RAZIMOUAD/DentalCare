@@ -6,13 +6,14 @@ import com.dentalcare.dentalcaremanager.patient.Patient;
 import com.dentalcare.dentalcaremanager.user.User;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PatientRestServiceImpl implements PatientRestService {
@@ -56,6 +57,7 @@ public class PatientRestServiceImpl implements PatientRestService {
 
     @Override
     public PatientResponse getPatientById(Integer id) {
+        System.out.println("🔍 [Backend] Patient recherché ID = " + id);
         Patient patient = patientService.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Patient non trouvé"));
         return mapToResponse(patient);
@@ -74,7 +76,11 @@ public class PatientRestServiceImpl implements PatientRestService {
 
     @Override
     public void deletePatient(Integer id) {
+        Patient patient = patientService.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Patient introuvable ID=" + id));
+
         patientService.deleteById(id);
+        log.info("🗑️ Patient supprimé : ID={}, Nom={} {}", patient.getId(), patient.getNom(), patient.getPrenom());
     }
 
     @Override

@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { catchError, of } from 'rxjs';
-import { FormsModule } from '@angular/forms';
-
+import {MatDialog} from '@angular/material/dialog';
+import { ConfirmationDialogComponent, ConfirmationDialogData} from '../../../components/confirmation-dialog/confirmation-dialog.component';
 import { PatientService, PatientResponse } from '../../../../../core/services/patient.service';
 import { LucideIconsModule } from '@shared/modules/lucide-icons.module';
 
@@ -28,7 +28,8 @@ export class PatientsListComponent implements OnInit {
 
   constructor(
     private patientService: PatientService,
-    private router: Router
+    private router: Router,
+    private dialog: MatDialog
   ) {}
 
   filters = {
@@ -45,25 +46,57 @@ export class PatientsListComponent implements OnInit {
    * ✏️ Navigue vers le formulaire d’édition
    */
   onEdit(id: number): void {
-    this.router.navigate(['edit', id]);
+    this.router.navigate([`/dashboard/patients/edit`, id])
+      .then(success => {
+        if (success) {
+          console.log(`✅ Navigation vers /dashboard/patients/edit/${id} réussie`);
+        } else {
+          console.warn('❌ Navigation échouée');
+        }
+      })
+      .catch(error => {
+        console.error('❌ Erreur lors de la navigation :', error);
+      });
   }
+
+
 
   /**
    * 👁️ Navigue vers la fiche détaillée du patient
    */
   onView(id: number): void {
-    this.router.navigate([id.toString()]);
+    void this.router.navigate([`/dashboard/patients/${id}`]);
   }
 
   /**
    * 🗑️ Suppression (à implémenter proprement plus tard)
    */
   onDelete(id: number): void {
-    if (confirm('Voulez-vous vraiment supprimer ce patient ?')) {
-      // TODO: Appeler le service de suppression + refresh
-      console.log('Suppression simulée du patient ID :', id);
-    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      width: '400px',
+      data: {
+        title: 'Confirmation de suppression',
+        message: 'Êtes-vous sûr de vouloir supprimer ce patient ? Cette action est irréversible.',
+        confirmText: 'Supprimer',
+        cancelText: 'Annuler'
+      } as ConfirmationDialogData
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed: boolean) => {
+      if (confirmed) {
+        this.patientService.deletePatient(id).subscribe({
+          next: () => {
+            console.log(`✅ Patient ID ${id} supprimé`);
+            this.loadPatients(); // 🔁 recharge la liste
+          },
+          error: (err) => {
+            console.error(' Erreur lors de la suppression :', err);
+          }
+        });
+      }
+    });
   }
+
 
   /**
    * 🧠 Optimisation de l’affichage
@@ -76,22 +109,34 @@ export class PatientsListComponent implements OnInit {
    */
   loadPatients(): void {
     this.isLoading = true;
+    this.hasError = false;
 
     this.patientService.getPaginatedPatients(this.currentPage, this.pageSize, this.filters)
       .pipe(
         catchError(err => {
           console.error('❌ Erreur chargement patients :', err);
           this.patients = [];
-          return of({ content: [], totalElements: 0, number: 0, size: 10, totalPages: 0 });
+          this.totalPatients = 0;
+          this.hasError = true;
+          return of({
+            patients: [],
+            page: {
+              totalElements: 0,
+              totalPages: 0,
+              number: 0,
+              size: this.pageSize
+            }
+          });
         })
       )
-      .subscribe(res => {
-        this.patients = res.content;
-        this.totalPatients = res.totalElements;
-        this.currentPage = res.number;
-        this.pageSize = res.size;
+      .subscribe(({ patients, page }) => {
+        this.patients = patients;
+        this.totalPatients = page.totalElements;
+        this.currentPage = page.number;
+        this.pageSize = page.size;
         this.isLoading = false;
       });
   }
+
 
 }

@@ -1,40 +1,44 @@
-import {Component, ViewChild} from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Component } from '@angular/core';
+import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
-import { LucideIconsModule} from '@shared/modules/lucide-icons.module';
+import { LucideIconsModule } from '@shared/modules/lucide-icons.module';
 import { PatientFormComponent } from '../patient-form/patient-form.component';
-import {PatientsListComponent} from '../patients-list/patients-list.component';
+import { PatientsListComponent } from '../patients-list/patients-list.component';
+
 @Component({
   selector: 'app-patients-page',
   standalone: true,
-  imports: [CommonModule, RouterModule, LucideIconsModule,PatientFormComponent, PatientsListComponent],
+  imports: [
+    CommonModule,
+    RouterModule,
+    LucideIconsModule,
+    PatientFormComponent,
+    PatientsListComponent
+  ],
   templateUrl: './patients-page.component.html',
   styleUrls: ['./patients-page.component.css']
 })
-
 export class PatientsPageComponent {
-  @ViewChild(PatientsListComponent) patientList!: PatientsListComponent;
+  showAddButton = false;
 
-  constructor(private router: Router) {}
-  showForm = false;
+  constructor(
+    private router: Router,
+    private route: ActivatedRoute
+  ) {}
 
-  toggleForm(): void {
-    this.showForm = !this.showForm;
+  /**
+   * 🔁 Détecte le composant actif dans le router-outlet
+   */
+  onComponentChange(componentRef: any): void {
+    this.showAddButton = componentRef instanceof PatientsListComponent;
   }
 
-  handlePatientCreated(): void {
-    this.showForm = false;
-    // 🔄 Recharge la première page pour voir le nouveau patient
-    this.patientList.currentPage = 0;
-    this.patientList.loadPatients();
-  }
+  /**
+   * ➕ Bouton de création de patient
+   */
   navigateToCreate(): void {
-    // TODO: utiliser cette méthode lors de la création en route dédiée
-
-    this.router.navigate(['create'], {
-      relativeTo: this.router.routerState.root.firstChild
-    }).catch(err => console.error('Navigation échouée :', err));
-
+    this.router.navigate(['create'], { relativeTo: this.route }).catch(err =>
+      console.error('Navigation échouée :', err)
+    );
   }
 }

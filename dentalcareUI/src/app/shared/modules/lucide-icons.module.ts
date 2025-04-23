@@ -44,6 +44,7 @@ const selectedIcons = {
   Home: icons.Home,
   Settings: icons.Settings,
   LogOut: icons.LogOut,
+  ArrowLeft: icons.ArrowLeft,
 
   // Icônes pour les actions
   Plus: icons.Plus,

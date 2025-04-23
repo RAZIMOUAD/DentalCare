@@ -3,14 +3,19 @@ package com.dentalcare.dentalcaremanager.controller;
 import com.dentalcare.dentalcaremanager.dto.PatientRequest;
 import com.dentalcare.dentalcaremanager.dto.PatientResponse;
 import com.dentalcare.dentalcaremanager.service.PatientRestService;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.hateoas.PagedModel;
 import java.util.List;
+
 //	Gère les requêtes HTTP (GET, POST, etc.) +Appelle PatientRestService, reçoit/retourne des DTOs
 @RestController
 @RequestMapping("/patients")
@@ -54,10 +59,15 @@ public class PatientController {
     /** ❌ Supprimer un patient */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<Void> delete(@PathVariable Integer id) {
-        patientRestService.deletePatient(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<String> delete(@PathVariable Integer id) {
+        try {
+            patientRestService.deletePatient(id);
+            return ResponseEntity.noContent().build();
+        } catch (EntityNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("❌ Patient introuvable avec l'ID : " + id);
+        }
     }
+
 
     /** 🔍 Récupérer un patient par ID */
     @GetMapping("/{id}")
@@ -67,16 +77,17 @@ public class PatientController {
     }
     @GetMapping("/paginated")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<Page<PatientResponse>> getPaginatedPatients(
+    public ResponseEntity<PagedModel<EntityModel<PatientResponse>>> getPaginatedPatients(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String nom,
             @RequestParam(required = false) Boolean createdByAdmin,
-            @RequestParam(required = false) Boolean enabled
+            @RequestParam(required = false) Boolean enabled,
+            PagedResourcesAssembler<PatientResponse> assembler
     ) {
-        return ResponseEntity.ok(
-                patientRestService.getPaginatedPatients(page, size, nom, createdByAdmin, enabled)
-        );
+        Page<PatientResponse> paged = patientRestService.getPaginatedPatients(page, size, nom, createdByAdmin, enabled);
+        PagedModel<EntityModel<PatientResponse>> model = assembler.toModel(paged);
+        return ResponseEntity.ok(model);
     }
 
 

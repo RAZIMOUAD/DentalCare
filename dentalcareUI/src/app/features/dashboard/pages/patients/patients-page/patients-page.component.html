@@ -9,21 +9,16 @@
       <p class="text-sm text-gray-500 italic">Suivez et gérez tous vos patients.</p>
     </div>
 
-    <!-- ✅ Bouton de bascule formulaire/liste -->
+    <!-- ✅ Bouton “ajouter” visible uniquement dans la liste -->
     <button
-      (click)="toggleForm()"
+      *ngIf="showAddButton"
+      (click)="navigateToCreate()"
       class="bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700 transition"
     >
-      {{ showForm ? '↩ Retour à la liste' : '+ Ajouter un patient' }}
+      + Ajouter un patient
     </button>
   </div>
 
-  <!-- ✅ Zone dynamique : soit formulaire soit liste -->
-  <div *ngIf="showForm; else patientsList">
-    <app-patient-form (created)="handlePatientCreated()"></app-patient-form>
-  </div>
-
-  <ng-template #patientsList>
-    <app-patients-list></app-patients-list>
-  </ng-template>
+  <!-- ✅ Affichage dynamique -->
+  <router-outlet (activate)="onComponentChange($event)"></router-outlet>
 </section>

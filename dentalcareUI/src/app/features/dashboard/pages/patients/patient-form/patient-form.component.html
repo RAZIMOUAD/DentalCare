@@ -1,8 +1,8 @@
 <section class="p-6 md:p-10 bg-white shadow-md rounded-xl max-w-4xl mx-auto">
-  <!-- 🔹 Titre -->
+  <!-- 🔹 Titre dynamique -->
   <h2 class="text-2xl md:text-3xl font-bold text-blue-900 mb-6 flex items-center gap-2">
-    <lucide-icon name="user-plus" class="w-6 h-6 text-blue-600"></lucide-icon>
-    Ajouter un nouveau patient
+    <lucide-icon [name]="isEditMode ? 'edit' : 'user-plus'" class="w-6 h-6 text-blue-600"></lucide-icon>
+    {{ isEditMode ? 'Modifier le patient' : 'Ajouter un nouveau patient' }}
   </h2>
 
   <!-- ✅ Message de succès -->
@@ -17,7 +17,6 @@
 
   <!-- 📋 Formulaire -->
   <form [formGroup]="patientForm" (ngSubmit)="onSubmit()" class="space-y-5">
-
     <!-- Prénom + Nom -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div>
@@ -64,7 +63,7 @@
           <option value="">-- Sélectionner --</option>
           <option value="HOMME">Homme</option>
           <option value="FEMME">Femme</option>
-          <option value="AUTRE">Autre</option>
+          <option value="AUTRE">Enfant</option>
         </select>
       </div>
 
@@ -91,9 +90,17 @@
       <button type="submit"
               class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-xl disabled:opacity-50"
               [disabled]="isSubmitting || patientForm.invalid">
-        Enregistrer
+        {{ isEditMode ? 'Mettre à jour' : 'Enregistrer' }}
       </button>
-    </div>
+      <!-- Bouton Retour -->
+      <div class="pt-4 flex justify-end">
+        <button type="button"
+                class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold px-6 py-2 rounded-xl ml-2"
+                (click)="goBack()">
+          ← Retour
+        </button>
+      </div>
 
+    </div>
   </form>
 </section>
