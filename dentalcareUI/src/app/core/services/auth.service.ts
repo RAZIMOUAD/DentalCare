@@ -150,4 +150,9 @@ export class AuthService {
   isLoggedIn(): boolean {
     return !!localStorage.getItem(this.tokenKey);
   }
+  getEmail(): string | null {
+    const decoded = this.getDecodedToken();
+    return decoded?.email || decoded?.sub || null;
+  }
+
 }

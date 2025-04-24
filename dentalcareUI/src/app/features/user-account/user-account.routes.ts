@@ -19,7 +19,13 @@ export const USER_ACCOUNT_ROUTES: Routes = [
         path: '',
         pathMatch: 'full',
         redirectTo: 'rendezvous'
+      },
+      {
+        path: 'profil',
+        loadComponent: () =>
+          import('./profile/profile.component').then(m => m.ProfileComponent)
       }
+
     ]
   }
 ];
