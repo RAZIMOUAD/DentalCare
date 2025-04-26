@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { LucideAngularModule } from 'lucide-angular';
-import { icons } from 'lucide';
+import { icons} from 'lucide';
 
 const selectedIcons = {
   // Icônes de base
@@ -24,6 +24,8 @@ const selectedIcons = {
   Pill: icons.Pill,
   HeartPulse: icons.HeartPulse,
   Activity: icons.Activity,
+  Sparkles: icons.Sparkles,
+  Stars: icons.Stars,
 
   // Icônes pour le stock
   Box: icons.Box,

@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
-import { catchError, of } from 'rxjs';
-import {MatDialog} from '@angular/material/dialog';
-import { ConfirmationDialogComponent, ConfirmationDialogData} from '../../../components/confirmation-dialog/confirmation-dialog.component';
+import { catchError, debounceTime, of, Subject } from 'rxjs';
+import { MatDialog } from '@angular/material/dialog';
+import { ConfirmationDialogComponent, ConfirmationDialogData } from '../../../components/confirmation-dialog/confirmation-dialog.component';
 import { PatientService, PatientResponse } from '../../../../../core/services/patient.service';
 import { LucideIconsModule } from '@shared/modules/lucide-icons.module';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-patients-list',
@@ -13,7 +14,8 @@ import { LucideIconsModule } from '@shared/modules/lucide-icons.module';
   imports: [
     CommonModule,
     RouterModule,
-    LucideIconsModule
+    LucideIconsModule,
+    FormsModule
   ],
   templateUrl: './patients-list.component.html',
   styleUrls: ['./patients-list.component.css']
@@ -25,6 +27,9 @@ export class PatientsListComponent implements OnInit {
   totalPatients = 0;
   currentPage = 0;
   pageSize = 10;
+
+  searchTerm = '';
+  private searchSubject = new Subject<string>();
 
   constructor(
     private patientService: PatientService,
@@ -40,11 +45,18 @@ export class PatientsListComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadPatients();
+
+    // 🔁 Déclenche la recherche dynamique après un délai
+    this.searchSubject.pipe(debounceTime(300)).subscribe(term => {
+      this.filters.nom = term;
+      this.currentPage = 0;
+      this.loadPatients();
+    });
+  }
+  onSearchChange(): void {
+    this.searchSubject.next(this.filters.nom);
   }
 
-  /**
-   * ✏️ Navigue vers le formulaire d’édition
-   */
   onEdit(id: number): void {
     this.router.navigate([`/dashboard/patients/edit`, id])
       .then(success => {
@@ -59,18 +71,10 @@ export class PatientsListComponent implements OnInit {
       });
   }
 
-
-
-  /**
-   * 👁️ Navigue vers la fiche détaillée du patient
-   */
   onView(id: number): void {
     void this.router.navigate([`/dashboard/patients/${id}`]);
   }
 
-  /**
-   * 🗑️ Suppression (à implémenter proprement plus tard)
-   */
   onDelete(id: number): void {
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       width: '400px',
@@ -87,7 +91,7 @@ export class PatientsListComponent implements OnInit {
         this.patientService.deletePatient(id).subscribe({
           next: () => {
             console.log(`✅ Patient ID ${id} supprimé`);
-            this.loadPatients(); // 🔁 recharge la liste
+            this.loadPatients();
           },
           error: (err) => {
             console.error(' Erreur lors de la suppression :', err);
@@ -97,16 +101,10 @@ export class PatientsListComponent implements OnInit {
     });
   }
 
-
-  /**
-   * 🧠 Optimisation de l’affichage
-   */
   trackById(index: number, patient: PatientResponse): number {
     return patient.id;
   }
-  /**
-   * 🔄 Charge tous les patients paginées depuis le backend
-   */
+
   loadPatients(): void {
     this.isLoading = true;
     this.hasError = false;
@@ -137,6 +135,4 @@ export class PatientsListComponent implements OnInit {
         this.isLoading = false;
       });
   }
-
-
 }
