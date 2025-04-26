@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { LucideIconsModule } from '@shared/modules/lucide-icons.module';
-import { PatientFormComponent } from '../patient-form/patient-form.component';
 import { PatientsListComponent } from '../patients-list/patients-list.component';
 
 @Component({
@@ -12,7 +11,6 @@ import { PatientsListComponent } from '../patients-list/patients-list.component'
     CommonModule,
     RouterModule,
     LucideIconsModule,
-    PatientFormComponent,
     PatientsListComponent
   ],
   templateUrl: './patients-page.component.html',

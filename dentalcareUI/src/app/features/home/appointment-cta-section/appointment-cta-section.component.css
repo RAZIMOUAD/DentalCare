@@ -1,0 +1,20 @@
+/* Animation fade-in-up */
+.animate-fade-in-up {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s ease-out;
+}
+
+.animate-fade-in-up.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Ajout d'un délai pour le sous-titre et bouton */
+.delay-200 {
+  transition-delay: 0.2s;
+}
+
+.delay-400 {
+  transition-delay: 0.4s;
+}
