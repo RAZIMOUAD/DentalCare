@@ -94,7 +94,8 @@ const selectedIcons = {
   Mail: icons.Mail,
   Phone: icons.Phone,
   MapPin: icons.MapPin,
-  Globe: icons.Globe
+  Globe: icons.Globe,
+
 };
 
 @NgModule({

@@ -1,0 +1,32 @@
+<div class="flex flex-col p-4 bg-white rounded-2xl shadow-sm border border-gray-200 hover:shadow-md transition-all duration-300">
+
+  <!-- Statut avec Icône -->
+  <div class="flex items-center gap-2 mb-3">
+    <lucide-icon [name]="getStatusIcon()" class="w-6 h-6" [ngClass]="getStatusClasses()"></lucide-icon>
+    <span class="font-semibold text-gray-700">{{ notification.email }}</span>
+  </div>
+
+  <!-- Type de notification -->
+  <div class="mb-2">
+    <span class="px-2 py-1 text-xs rounded-full font-medium" [ngClass]="getTypeBadgeClasses()">
+      {{ notification.type }}
+    </span>
+  </div>
+
+  <!-- Date et Heure -->
+  <div class="text-sm text-gray-500 mb-2">
+    {{ formatDateTime(notification.attemptedAt) }}
+  </div>
+
+  <!-- Message résumé -->
+  <div class="text-sm text-gray-600 truncate" [title]="notification.message">
+    {{ notification.message }}
+  </div>
+
+  <!-- Statut final (Success/Failure) Badge -->
+  <div class="mt-4 self-end">
+    <span class="px-3 py-1 text-xs rounded-full font-semibold" [ngClass]="getStatusClasses()">
+      {{ notification.status }}
+    </span>
+  </div>
+</div>

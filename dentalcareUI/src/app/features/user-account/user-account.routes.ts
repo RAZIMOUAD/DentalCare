@@ -4,6 +4,7 @@ import { Routes } from '@angular/router';
 import { AuthGuardUser } from '../../core/guards/auth-user.guard';
 import { UserLayoutComponent } from '../../layouts/user-layout/user-layout.component';
 
+
 export const USER_ACCOUNT_ROUTES: Routes = [
   {
     path: '',
@@ -14,6 +15,9 @@ export const USER_ACCOUNT_ROUTES: Routes = [
         path: '',
         loadComponent: () =>
           import('./user-account.component').then(m => m.UserAccountComponent),
+      }, {
+        path: 'notifications',
+        loadComponent: () => import('../user-account/notifications-user/notifications-user-page.component').then(m => m.NotificationsUserPageComponent)
       },
       {
         path: '',

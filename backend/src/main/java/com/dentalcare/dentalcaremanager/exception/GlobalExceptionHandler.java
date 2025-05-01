@@ -1,5 +1,6 @@
 package com.dentalcare.dentalcaremanager.exception;
 
+import com.dentalcare.dentalcaremanager.notifications.NotificationSendException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,17 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(ex.getMessage(), HttpStatus.NOT_FOUND, request.getRequestURI());
     }
 
+    @ExceptionHandler(NotificationSendException.class)
+    public ResponseEntity<ApiError> handleNotificationSendException(
+            NotificationSendException ex,
+            HttpServletRequest request
+    ) {
+        return buildErrorResponse(
+                "Erreur lors de l'envoi de notification : " + ex.getMessage(),
+                HttpStatus.BAD_REQUEST,
+                request.getRequestURI()
+        );
+    }
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ApiError> handleRuntime(
             RuntimeException ex,

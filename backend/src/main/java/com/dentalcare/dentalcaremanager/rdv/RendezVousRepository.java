@@ -15,6 +15,7 @@ public interface RendezVousRepository extends JpaRepository<RendezVous, Integer>
     List<RendezVous> findByPatientId(Integer patientId);
     List<RendezVous> findByDateBetween(LocalDate start, LocalDate end);
     List<RendezVous> findByStatus(StatusRdv status);  //voir impl dans RendezVousServiceImpl.java
+    List<RendezVous> findByDateAndStatus(LocalDate date, StatusRdv status);
 
     @Query("""
     SELECT CASE WHEN COUNT(r) > 0 THEN true ELSE false END

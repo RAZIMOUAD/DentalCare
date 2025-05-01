@@ -7,6 +7,7 @@ import { MessagesComponent } from './pages/messages/messages.component';
 import { StatistiquesComponent } from './pages/statistiques/statistiques.component';
 import { ParametresComponent } from './pages/parametres/parametres.component';
 import { PATIENTS_ROUTES } from './pages/patients/patients.routes';
+import {NotificationsAdminPageComponent} from './pages/notifications-admin/notifications-admin-page.component';
 export const dashboardRoutes: Routes = [
   {
     path: '',
@@ -16,7 +17,8 @@ export const dashboardRoutes: Routes = [
       { path: 'accueil', component: AccueilComponent },
       {path: 'patients', children: PATIENTS_ROUTES},
       { path: 'rendezvous', component: RendezvousComponent }, // ajouter un sous-routage lorsqu'on aura des sous routes
-      { path: 'messages', component: MessagesComponent },
+      { path: 'notifications', component: NotificationsAdminPageComponent },
+      {path: 'messages' , component: MessagesComponent},
       { path: 'statistiques', component: StatistiquesComponent },
       { path: 'parametres', component: ParametresComponent },
       { path: '', redirectTo: 'accueil', pathMatch: 'full' },

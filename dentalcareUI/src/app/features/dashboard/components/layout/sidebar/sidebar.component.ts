@@ -25,6 +25,7 @@ export class SidebarComponent {
     { label: 'Patients', icon: 'Users', route: '/dashboard/patients' },
     { label: 'Rendez-vous', icon: 'CalendarDays', route: '/dashboard/rendezvous' },
     { label: 'Messages', icon: 'MessageSquare', route: '/dashboard/messages' },
+    { label: 'Notifications', icon: 'Bell', route: '/dashboard/notifications' },
     { label: 'Statistiques', icon: 'BarChart2', route: '/dashboard/statistiques' },
     { label: 'Paramètres', icon: 'Settings', route: '/dashboard/parametres' },
   ];
