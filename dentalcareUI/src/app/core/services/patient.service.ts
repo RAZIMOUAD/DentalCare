@@ -111,5 +111,10 @@ export class PatientService {
   deletePatient(id: number): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/${id}`);
   }
+  getPatientByEmail(email: string): Observable<PatientResponse> {
+    return this.http.get<PatientResponse>(`${this.baseUrl}/email`, { params: { email } });
+  }
+
+
 
 }

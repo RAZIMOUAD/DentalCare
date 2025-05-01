@@ -1,0 +1,21 @@
+<div class="profile-card">
+  <h2 class="profile-title">👤 Mon Profil</h2>
+
+  <div *ngIf="isLoading" class="loading">
+    Chargement des informations...
+  </div>
+
+  <div *ngIf="!isLoading && patient" class="profile-info">
+    <div class="profile-row"><strong>Nom :</strong> {{ patient?.nom }}</div>
+    <div class="profile-row"><strong>Prénom :</strong> {{ patient?.prenom }}</div>
+    <div class="profile-row"><strong>Email :</strong> {{ patient?.email }}</div>
+    <div class="profile-row"><strong>CIN :</strong> {{ patient?.cin }}</div>
+    <div class="profile-row"><strong>Date de naissance :</strong> {{ patient?.dateNaissance }}</div>
+    <div class="profile-row"><strong>Adresse :</strong> {{ patient?.adresse }}</div>
+
+  </div>
+
+  <div *ngIf="!isLoading && !patient" class="error-message">
+    ❌ Impossible de charger les informations du profil.
+  </div>
+</div>

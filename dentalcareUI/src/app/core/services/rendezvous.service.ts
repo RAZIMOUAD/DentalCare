@@ -13,7 +13,7 @@ export class RendezvousService {
 
   /** GET tous les RDV (ADMIN) */
   getAll(): Observable<RendezVousResponse[]> {
-    return this.http.get<RendezVousResponse[]>(`${this.api}/rendezvous`);
+    return this.http.get<RendezVousResponse[]>(`${this.api}/rendezvous/all`);
   }
 
   /** 🔍 GET RDV par date */
