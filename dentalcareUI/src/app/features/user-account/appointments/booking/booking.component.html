@@ -1,16 +1,21 @@
-<full-calendar [options]="calendarOptions"></full-calendar>
+<full-calendar [options]="calendarOptions" ></full-calendar>
 
 <div *ngIf="showForm" class="rdv-form-container">
   <h3>🗓️ Prendre RDV pour le {{ selectedDate }}</h3>
 
-  <label for="horaire">Choisir un horaire disponible :</label>
+  <label for="horaire">Choisir un créneau disponible :</label>
   <select id="horaire" (change)="onSlotSelected($event)">
     <option disabled selected value="">-- Choisissez un créneau --</option>
     <option *ngFor="let slot of getAvailableSlots()">{{ slot }}</option>
   </select>
+  <label for="type">Type de consultation :</label>
+  <select id="type" [(ngModel)]="selectedType" required>
+    <option disabled selected value="">-- Choisissez un type --</option>
+    <option *ngFor="let type of typeOptions" [value]="type">{{ type }}</option>
+  </select>
 
   <div class="rdv-buttons">
-    <button class="btn-confirm" (click)="validerRDV()" [disabled]="!heureDebut">Valider</button>
-    <button class="btn-cancel" (click)="annulerRDV()">Annuler</button>
+    <button class="btn-confirm" (click)="validerRDV()" [disabled]="!heureDebut">✅ Valider</button>
+    <button class="btn-cancel" (click)="annulerRDV()">❌ Annuler</button>
   </div>
 </div>
