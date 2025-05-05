@@ -1,21 +1,42 @@
-<full-calendar [options]="calendarOptions" ></full-calendar>
 
-<div *ngIf="showForm" class="rdv-form-container">
-  <h3>🗓️ Prendre RDV pour le {{ selectedDate }}</h3>
-
-  <label for="horaire">Choisir un créneau disponible :</label>
-  <select id="horaire" (change)="onSlotSelected($event)">
-    <option disabled selected value="">-- Choisissez un créneau --</option>
-    <option *ngFor="let slot of getAvailableSlots()">{{ slot }}</option>
-  </select>
-  <label for="type">Type de consultation :</label>
-  <select id="type" [(ngModel)]="selectedType" required>
-    <option disabled selected value="">-- Choisissez un type --</option>
-    <option *ngFor="let type of typeOptions" [value]="type">{{ type }}</option>
-  </select>
-
-  <div class="rdv-buttons">
-    <button class="btn-confirm" (click)="validerRDV()" [disabled]="!heureDebut">✅ Valider</button>
-    <button class="btn-cancel" (click)="annulerRDV()">❌ Annuler</button>
+<section class="px-6 py-8 max-w-7xl mx-auto text-gray-800">
+  <!-- 🗓️ Calendrier -->
+  <div class="bg-white rounded-xl border border-blue-200 shadow p-5 mb-10">
+    <full-calendar [options]="calendarOptions" class="rounded-md"></full-calendar>
   </div>
-</div>
+
+  <!-- 🔄 Boutons d'action -->
+  <div class="flex flex-wrap justify-between items-center mb-6 gap-4">
+    <div class="text-lg font-semibold text-blue-700">
+      Mes Rendez-vous
+    </div>
+
+    <div class="flex gap-4">
+      <button
+        class="px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition"
+        (click)="toggleTable()"
+      >
+        📋 Voir la liste
+      </button>
+      <button
+        class="px-4 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 transition"
+        (click)="showForm = true"
+      >
+        ➕ Nouveau RDV
+      </button>
+    </div>
+  </div>
+
+  <!-- 📄 Table des RDVs -->
+  <app-appointments-table *ngIf="showTable"></app-appointments-table>
+
+  <!-- 📝 Formulaire de réservation -->
+  <app-appointment-form
+    *ngIf="showForm"
+    [selectedDate]="selectedDate"
+    [reservedSlots]="reservedSlots"
+    (cancel)="annulerRDV()"
+    (submit)="validerRDV($event)">
+  </app-appointment-form>
+
+</section>

@@ -1,87 +1,63 @@
-<section class="px-4 sm:px-8 py-10 max-w-7xl mx-auto text-gray-800">
-  <!-- 🔵 Titre principal avec icône -->
-  <h2 class="text-3xl sm:text-4xl font-bold text-blue-700 mb-8 text-center flex justify-center items-center gap-3">
-    <lucide-icon name="calendar-days" class="w-8 h-8 text-blue-600"></lucide-icon>
+<section class="px-4 sm:px-8 py-12 max-w-7xl mx-auto text-gray-800 animate-fadeIn">
+  <h2 class="text-3xl sm:text-4xl font-bold text-blue-700 mb-10 text-center flex items-center justify-center gap-3">
+    <lucide-icon name="calendar-days" class="w-8 h-8 text-blue-600 animate-bounce-slow"></lucide-icon>
     Calendrier des Disponibilités
   </h2>
 
-  <!-- 🧩 Message pour utilisateur non connecté -->
-  <div
-    *ngIf="!isAuthenticated"
-    class="mb-10 text-center bg-blue-50 border border-blue-200 p-6 rounded-xl shadow transition-all duration-300"
-  >
-    <p class="text-blue-800 font-medium flex justify-center items-center gap-2 text-base sm:text-lg">
+  <div *ngIf="!isAuthenticated" class="mb-10 bg-blue-50 border border-blue-200 p-6 rounded-xl shadow-sm text-center space-y-3">
+    <p class="text-blue-800 font-medium text-base sm:text-lg flex items-center justify-center gap-2">
       <lucide-icon name="user-plus" class="w-5 h-5 text-blue-600"></lucide-icon>
       Connectez-vous ou créez un compte pour réserver un créneau.
     </p>
-
-    <a
-      routerLink="/login"
-      class="inline-flex items-center justify-center mt-3 px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg shadow hover:bg-blue-700 transition"
-    >
-      <span>Se connecter</span>
-      <lucide-icon name="chevron-right" class="ml-2 w-4 h-4" />
+    <a routerLink="/login" class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg shadow hover:bg-blue-700 transition">
+      Se connecter
+      <lucide-icon name="chevron-right" class="w-4 h-4" />
     </a>
   </div>
 
-
-  <!-- 🔎 Filtres (structure en place pour dev futur) -->
-  <form class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10" (ngSubmit)="applyFilters()">
-    <!-- 🔹 Type de rendez-vous -->
+  <form class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10" (ngSubmit)="applyFilters()" autocomplete="off">
     <div>
       <label class="block text-sm font-semibold text-gray-700 mb-1">Type de rendez-vous</label>
-      <select
-        [(ngModel)]="appointmentType"
-        name="appointmentType"
-        class="block w-full border border-gray-300 rounded-lg p-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-      >
+      <select [(ngModel)]="appointmentType" name="appointmentType" (change)="applyFilters()" class="block w-full border border-gray-300 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
         <option>Tout afficher</option>
-        <option>Consultation</option>
-        <option>Détartrage</option>
-        <option>Suivi</option>
+        <option>CONSULTATION</option>
+        <option>DETARTRAGE</option>
+        <option>URGENCE</option>
       </select>
     </div>
-    <div>
-      <!-- 🔹 Praticien -->
-      <label class="block text-sm font-semibold text-gray-700 mb-1">Praticien</label>
-      <select
-        [(ngModel)]="selectedDoctor"
-        name="selectedDoctor"
-        class="block w-full border border-gray-300 rounded-lg p-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-      >
-        <option value="">Tous les praticiens</option>
-        <option>Dr. Zahra</option>
-        <option>Dr. Hicham</option>
-        <option>Dr. Yassine</option>
-      </select>
-    </div>
-    <!-- 🔹 Mois -->
+
     <div>
       <label class="block text-sm font-semibold text-gray-700 mb-1">Période</label>
       <input
         type="month"
         [(ngModel)]="selectedMonth"
-        (change)="applyFilters()"
+        (change)="onMonthInputChange($event)"
         name="selectedMonth"
-        class="block w-full border border-gray-300 rounded-lg p-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+        class="block w-full border border-gray-300 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
+
     </div>
   </form>
 
-  <!-- 🎨 Légende -->
   <div class="flex flex-wrap gap-6 justify-center items-center text-sm mb-8">
     <div class="flex items-center gap-2">
-      <span class="w-4 h-4 bg-blue-500 rounded-full shadow-sm"></span>
+      <span class="w-4 h-4 bg-blue-500 rounded-full shadow"></span>
       <span class="text-blue-600 font-medium">Disponible</span>
     </div>
     <div class="flex items-center gap-2">
-      <span class="w-4 h-4 bg-gray-400 rounded-full shadow-sm"></span>
+      <span class="w-4 h-4 bg-gray-400 rounded-full shadow"></span>
       <span class="text-gray-600 font-medium">Réservé</span>
     </div>
   </div>
 
-  <!-- 📅 Calendrier -->
-  <div class="bg-white rounded-xl border border-blue-100 shadow-xl p-5 md:p-6">
-    <full-calendar [options]="calendarOptions"  #calendarRef></full-calendar>
+  <div class="bg-white rounded-xl border border-blue-100 shadow-xl p-4 md:p-6 transition-all">
+    <full-calendar [options]="calendarOptions" #calendarRef></full-calendar>
+  </div>
+
+  <div *ngIf="isAuthenticated" class="fixed bottom-6 right-6 z-50">
+    <button class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-full shadow-lg flex items-center gap-2 transition-all" (click)="onStartReservation()">
+      <lucide-icon name="calendar-plus" class="w-5 h-5" />
+      Réserver un créneau
+    </button>
   </div>
 </section>

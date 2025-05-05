@@ -62,10 +62,24 @@ export class RendezvousComponent implements OnInit, OnDestroy {
     },
     selectable: false,
     editable: false,
-    events: [],
+    locale: 'fr',
     eventClick: this.handleEventClick.bind(this),
     eventDidMount: this.handleEventMount.bind(this),
-    locale: 'fr'
+    events: (fetchInfo, successCallback, failureCallback) => {
+      this.rendezvousService.getAll().pipe(takeUntil(this.destroy$)).subscribe({
+        next: (data) => {
+          this.rendezvousList = data;
+          const events = this.mapToCalendarEvents(data);
+          successCallback(events);
+        },
+        error: (err) => {
+          this.error = "Impossible de charger les rendez-vous.";
+          this.notificationService.showError("Erreur lors du chargement des rendez-vous");
+          console.error("Erreur lors du chargement :", err);
+          failureCallback(err);
+        }
+      });
+    }
   };
 
   constructor(private rendezvousService: RendezvousService,
@@ -112,14 +126,14 @@ export class RendezvousComponent implements OnInit, OnDestroy {
   private mapToCalendarEvents(rdvList: RendezVousResponse[]) {
     return rdvList.map(rdv => ({
       id: rdv.id.toString(),
-      title: `${rdv.patientFullName} (${rdv.status})`,
+      title: `${rdv.nomPatient} (${rdv.status})`,
       start: `${rdv.date}T${rdv.heureDebut}`,
       end: `${rdv.date}T${rdv.heureFin}`,
       color: this.getStatusColor(rdv.status),
       extendedProps: {
-        patientFullName: rdv.patientFullName,
+        nomPatient: rdv.nomPatient,
         status: rdv.status,
-        description: rdv.description || ''
+        type: rdv.type || ''
       }
     }));
   }
@@ -140,7 +154,7 @@ export class RendezvousComponent implements OnInit, OnDestroy {
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
         title: 'Détails du rendez-vous',
-        message: `Patient: ${rdv.patientFullName}\nStatut: ${rdv.status}`,
+        message: `Patient: ${rdv.nomPatient}\nStatut: ${rdv.status}`,
         confirmText: 'Confirmer',
         cancelText: 'Annuler'
       }

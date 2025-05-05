@@ -1,8 +1,10 @@
 package com.dentalcare.dentalcaremanager.rdv;
 
+import com.dentalcare.dentalcaremanager.admin.RendezVousAdminResponse;
 import com.dentalcare.dentalcaremanager.dto.RendezVousRequest;
 import com.dentalcare.dentalcaremanager.dto.RendezVousResponse;
 import com.dentalcare.dentalcaremanager.service.RendezVousService;
+import jakarta.annotation.security.PermitAll;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -107,4 +109,24 @@ public class RendezVousController {
         rendezVousService.deleteById(id);
         return ResponseEntity.ok("Rendez-vous supprimé avec succès.");
     }
+    @GetMapping("/public/by-month")
+    @PermitAll
+    public ResponseEntity<List<RendezVousResponse>> getPublicMonth(
+            @RequestParam int year,
+            @RequestParam int month) {
+        return ResponseEntity.ok(rendezVousService
+                .getConfirmedByMonth(year, month));
+    }
+    @GetMapping("/admin/by-month")
+    @PreAuthorize("hasAuthority(T(com.dentalcare.dentalcaremanager.security.RoleNames).ADMIN)")
+    public ResponseEntity<List<RendezVousAdminResponse>> getAllForAdminByMonth(
+            @RequestParam int year,
+            @RequestParam int month) {
+
+        List<RendezVousAdminResponse> responses = rendezVousService
+                .getAllForAdminByMonth(year, month);
+
+        return ResponseEntity.ok(responses);
+    }
+
 }

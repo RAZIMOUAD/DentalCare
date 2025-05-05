@@ -48,7 +48,7 @@ export class LoginComponent {
     }
 
     const payload = this.loginForm.value;
-    this.authService.authenticate(payload).subscribe({
+    this.authService.login(payload).subscribe({
       next: (response) => {
         this.authService.handleLoginResponse(response); // ✅ redirection + stockage
       },

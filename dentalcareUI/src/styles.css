@@ -3,6 +3,14 @@
 @tailwind components;
 @tailwind utilities;
 
+.snackbar-success {
+  background-color: #16a34a;
+  color: white;
+}
+.snackbar-error {
+  background-color: #dc2626;
+  color: white;
+}
 
 .success-snackbar {
      background-color: #4CAF50;

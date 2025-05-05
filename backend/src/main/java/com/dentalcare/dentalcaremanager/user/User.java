@@ -49,6 +49,8 @@ public class User implements UserDetails, Principal {
     @EqualsAndHashCode.Exclude
     private Set<Role> roles = new HashSet<>();
 
+    @Column(nullable = false)
+    private boolean createdByAdmin = false;
 
 
     @CreatedDate

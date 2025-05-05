@@ -4,6 +4,7 @@ import com.dentalcare.dentalcaremanager.notifications.NotificationSendException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,6 +19,14 @@ public class GlobalExceptionHandler {
             HttpServletRequest request
     ) {
         return buildErrorResponse(ex.getMessage(), HttpStatus.NOT_FOUND, request.getRequestURI());
+    }
+    @ExceptionHandler(RendezVousNotFoundException.class)
+    public ResponseEntity<String> handleNotFound(RendezVousNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+    }
+    @ExceptionHandler(InvalidRendezVousRequestException.class)
+    public ResponseEntity<String> handleInvalidRequest(InvalidRendezVousRequestException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
     }
 
     @ExceptionHandler(NotificationSendException.class)
@@ -48,4 +57,17 @@ public class GlobalExceptionHandler {
                 .build();
         return new ResponseEntity<>(error, status);
     }
+
+    @ExceptionHandler(SlotConflictException.class)
+    public ResponseEntity<String> handleSlotConflict(SlotConflictException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+    }
+
+
+    @ExceptionHandler(ObjectOptimisticLockingFailureException.class)
+    public ResponseEntity<String> handleOptimisticLockingFailure(ObjectOptimisticLockingFailureException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body("Ce rendez-vous a été modifié par un autre utilisateur. Veuillez recharger la page.");
+    }
+
 }

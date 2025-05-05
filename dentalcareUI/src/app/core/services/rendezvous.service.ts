@@ -1,19 +1,23 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams  } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
-import { Observable } from 'rxjs';
+import {Observable, tap} from 'rxjs';
 import { RendezVousResponse } from '../../features/dashboard/models/rendezvous-response.model';
 import { RendezVousRequest } from '../../features/dashboard/models/rendezvous-request.model';
+import {RendezVousAdminResponse} from '../../features/dashboard/models/rendezvous-admin-response.model';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import {catchError} from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
 export class RendezvousService {
   private api = environment.apiUrl;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient,
+              private snackBar: MatSnackBar) {}
 
   /** GET tous les RDV (ADMIN) */
   getAll(): Observable<RendezVousResponse[]> {
-    return this.http.get<RendezVousResponse[]>(`${this.api}/rendezvous/all`);
+    return this.http.get<RendezVousResponse[]>(`${this.api}/rendezvous`);
   }
 
   /** 🔍 GET RDV par date */
@@ -35,8 +39,6 @@ export class RendezvousService {
     });
   }
 
-
-
   /** GET mes RDV (USER connecté) */
   getMyRendezVous(): Observable<RendezVousResponse[]> {
     return this.http.get<RendezVousResponse[]>(`${this.api}/rendezvous/by-user`);
@@ -48,12 +50,12 @@ export class RendezvousService {
   }
   /** ✅ Confirmer un RDV */
   confirmRendezVous(id: number): Observable<void> {
-    return this.http.patch<void>(`${this.api}/rendezvous/${id}/confirm`, {});
+    return this.http.put<void>(`${this.api}/rendezvous/${id}/confirm`, {});
   }
 
   /** ⚠️ Rejeter un RDV */
   rejectRendezVous(id: number): Observable<void> {
-    return this.http.patch<void>(`${this.api}/rendezvous/${id}/reject`, {});
+    return this.http.put<void>(`${this.api}/rendezvous/${id}/reject`, {});
   }
 
 
@@ -66,8 +68,56 @@ export class RendezvousService {
     return this.http.put<RendezVousResponse>(`${this.api}/rendezvous/${id}`, data);
   }
 
-  /** 🌍 GET RDV publics (optionnel pour page sans login) */
-  getPublicDisponibilites(): Observable<RendezVousResponse[]> {
-    return this.http.get<RendezVousResponse[]>(`${this.api}/rendezvous/public`);
+  /** 🌍 GET RDV publics confirmés (affichage calendrier public) */
+  getPublicByMonth(year: number, month: number): Observable<RendezVousResponse[]> {
+    return this.http.get<RendezVousResponse[]>(`${this.api}/rendezvous/public/by-month`, {
+      params: { year, month }
+    });
   }
+
+  /** 🧠 GET RDV enrichis (admin, avec infos patient/user) */
+  getAllAdminByMonth(year: number, month: number): Observable<RendezVousAdminResponse[]> {
+    return this.http.get<RendezVousAdminResponse[]>(`${this.api}/rendezvous/admin/by-month`, {
+      params: { year, month }
+    });
+  }
+
+  /** 🔍 GET RDV par statut (EN_ATTENTE, CONFIRME, ANNULE...) */
+  getByStatus(status: string): Observable<RendezVousResponse[]> {
+    return this.http.get<RendezVousResponse[]>(`${this.api}/rendezvous/by-status`, {
+      params: { status }
+    });
+  }
+  /** 📄 GET RDV par ID */
+  getById(id: number): Observable<RendezVousResponse> {
+    return this.http.get<RendezVousResponse>(`${this.api}/rendezvous/${id}`);
+  }
+  /**
+   * 🧠 Crée un RDV avec gestion d'erreur UX via toast
+   */
+  createRendezVousSafe(data: RendezVousRequest): Observable<RendezVousResponse> {
+    return this.http.post<RendezVousResponse>(`${this.api}/rendezvous`, data).pipe(
+      tap(() => {
+        this.snackBar.open('✅ Rendez-vous confirmé avec succès.', 'Fermer', {
+          duration: 3000,
+          panelClass: ['snackbar-success']
+        });
+      }),
+      catchError((error) => {
+        if (error.status === 409) {
+          this.snackBar.open('⛔ Ce créneau est déjà réservé. Merci de choisir un autre.', 'Fermer', {
+            duration: 5000,
+            panelClass: ['snackbar-error']
+          });
+        } else {
+          this.snackBar.open('❌ Une erreur est survenue lors de la création.', 'Fermer', {
+            duration: 5000,
+            panelClass: ['snackbar-error']
+          });
+        }
+        throw error; // laisse passer l'erreur au composant si besoin
+      })
+    );
+  }
+
 }

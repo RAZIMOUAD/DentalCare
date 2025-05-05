@@ -14,6 +14,10 @@ export interface RegisterPayload {
   email: string;
   password: string;
 }
+export interface AccountStatusResponse {
+  enabled: boolean;
+  message: string;
+}
 
 export interface LoginPayload {
   email: string;
@@ -42,10 +46,7 @@ export class AuthService {
   constructor(private http: HttpClient, private router: Router) {}
 
   // code injecté dans loginComponent
-  // 🔐 Connexion
-  login(data: LoginPayload): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.API_URL}/auth/authenticate`, data);
-  }
+
   activateAccount(token: string): Observable<void> {
     return this.http.get<void>(`${this.API_URL}/auth/activate-account`, {
       params: { token }
@@ -58,38 +59,51 @@ export class AuthService {
   }
 
   // 🔐 Authentification HTTP
-  authenticate(credentials: { email: string; password: string }): Observable<{ token: string }> {
-    return this.http.post<{ token: string }>(`${this.API_URL}/auth/authenticate`, credentials);
-  }
-  // 📦 Gestion du token + redirection
+  login(credentials: LoginPayload): Observable<AuthResponse> {
+ return this.http.post<AuthResponse>(`${this.API_URL}/auth/authenticate`, credentials);
+   }
+
+
   handleLoginResponse(response: { token: string }): void {
     try {
       const token = response.token;
-      localStorage.setItem('authToken', token);
+      localStorage.setItem(this.tokenKey, token);
 
       const decoded: DecodedToken = jwtDecode(token);
       console.log('🔐 Token JWT décodé :', decoded);
 
-      if (decoded.role === 'ADMIN' || decoded.roles?.includes('ROLE_ADMIN')) {
-        this.router.navigate(['/dashboard']).then(() =>
-          console.log('✅ Redirection vers Dashboard')
-        );
-      } else if (decoded.role === 'USER' || decoded.roles?.includes('ROLE_USER')) {
-        this.router.navigate(['/user-account']).then(() =>
-          console.log('✅ Redirection vers User account')
-        );
-      } else {
-        this.router.navigate(['/']).then(() =>
-          console.log('✅ Redirection fallback')
-        );
-        console.warn('⚠️ Aucun rôle reconnu. Token :', decoded);
-      }
-
+      const roles = this.extractRoles(decoded);
+      this.redirectBasedOnRoles(roles);
     } catch (err) {
       console.error('❌ Erreur lors du traitement du token :', err);
-      this.logout(); // Optionnel : mieux vaut sécuriser
+      this.logout(); // Sécurité en cas de token corrompu
     }
   }
+
+// 🔎 Utilitaire : extraire les rôles
+  private extractRoles(decoded: DecodedToken): string[] {
+    if (decoded.roles) return decoded.roles;
+    if (decoded.role) return [decoded.role];
+    return [];
+  }
+
+// 🧭 Utilitaire : redirection par rôle
+  private redirectBasedOnRoles(roles: string[]): void {
+    if (roles.includes('ROLE_ADMIN')) {
+      this.router.navigate(['/dashboard']).then(() =>
+        console.log('✅ Redirection vers Dashboard')
+      );
+    } else if (roles.includes('ROLE_USER')) {
+      this.router.navigate(['/user-account']).then(() =>
+        console.log('✅ Redirection vers compte utilisateur')
+      );
+    } else {
+      this.router.navigate(['/']).then(() =>
+        console.warn('⚠️ Aucun rôle reconnu. Redirection fallback.')
+      );
+    }
+  }
+
 
   // 🛠 Gérer les erreurs de façon centralisée
   getErrorMessage(error: HttpErrorResponse): string {
@@ -141,10 +155,12 @@ export class AuthService {
   }
 
   // 👤 Récupérer le rôle
-  getUserRole(): string | null {
+  getUserRoles(): string[] {
     const decoded = this.getDecodedToken();
-    return decoded?.roles?.[0] || null;
+    if (decoded?.roles) return decoded.roles;
+    return decoded?.role ? [decoded.role] : [];
   }
+
 
   // ✔️ Savoir si l’utilisateur est connecté
   isLoggedIn(): boolean {
@@ -153,6 +169,14 @@ export class AuthService {
   getEmail(): string | null {
     const decoded = this.getDecodedToken();
     return decoded?.email || decoded?.sub || null;
+  }
+  resendActivationToken(email: string): Observable<any> {
+    return this.http.post(`${this.API_URL}/auth/resend-activation`, { email });
+  }
+  checkAccountStatus(email: string): Observable<AccountStatusResponse> {
+    return this.http.get<AccountStatusResponse>(`${this.API_URL}/auth/check-account-status`, {
+      params: { email }
+    });
   }
 
 }

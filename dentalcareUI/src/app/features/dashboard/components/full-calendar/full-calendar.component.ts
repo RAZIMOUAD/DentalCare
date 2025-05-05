@@ -59,7 +59,7 @@ export class FullCalendarComponent implements OnInit {
   }
   private mapToEvents(rdvs: RendezVousResponse[]): EventInput[] {
     return rdvs.map((rdv) => ({
-      title: `${rdv.patientFullName} (${rdv.status})`,
+      title: `${rdv.nomPatient} (${rdv.status})`,
       start: `${rdv.date}T${rdv.heureDebut}`,
       end: `${rdv.date}T${rdv.heureFin}`,
       color: this.getColorByStatus(rdv.status)

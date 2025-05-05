@@ -1,9 +1,13 @@
 export interface RendezVousResponse {
   id: number;
-  date: string;             // 'YYYY-MM-DD'
-  heureDebut: string;       // 'HH:mm'
-  heureFin: string;         // 'HH:mm'
-  status: string;           // e.g. "EN_ATTENTE"
-  patientFullName: string;  // Construit côté backend
-  description?: string;
+  date: string;
+  heureDebut: string;
+  heureFin: string;
+  status: string;
+  motif?: string;
+  nomPatient: string;
+  type?: string;
+  praticien: string;
+  confirmed: boolean;       // ✔ correspond au JSON
+  canBeCancelled: boolean;
 }

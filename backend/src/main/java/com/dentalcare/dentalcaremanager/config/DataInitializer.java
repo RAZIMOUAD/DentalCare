@@ -1,19 +1,25 @@
 package com.dentalcare.dentalcaremanager.config;
 
 
+import com.dentalcare.dentalcaremanager.patient.Patient;
+import com.dentalcare.dentalcaremanager.patient.PatientRepository;
+import com.dentalcare.dentalcaremanager.rdv.RendezVous;
+import com.dentalcare.dentalcaremanager.rdv.RendezVousRepository;
+import com.dentalcare.dentalcaremanager.rdv.StatusRdv;
+import com.dentalcare.dentalcaremanager.rdv.TypeRdv;
 import com.dentalcare.dentalcaremanager.role.Role;
 import com.dentalcare.dentalcaremanager.user.User;
 import com.dentalcare.dentalcaremanager.role.RoleRepository;
 import com.dentalcare.dentalcaremanager.user.UserRepository;
+import com.github.javafaker.Faker;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -23,6 +29,12 @@ public class DataInitializer implements CommandLineRunner {
     private final RoleRepository roleRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final PatientRepository patientRepository;
+    private final RendezVousRepository rendezVousRepository;
+
+
+    private final Faker faker = new Faker(new Locale("fr"));
+    private final Random random = new Random();
 
     @Override
     public void run(String... args) {
@@ -34,10 +46,17 @@ public class DataInitializer implements CommandLineRunner {
         Role adminRole = createRoleIfNotFound("ROLE_ADMIN");
         Role userRole = createRoleIfNotFound("ROLE_USER");
 
-        // 👤 Crée un super utilisateur admin si inexistant
+        createAdminIfMissing(adminRole);
+
+        generateFakeUsersAndPatients(userRole);
+        generateFakeRendezVous();
+
+
+    }
+    private void createAdminIfMissing(Role adminRole) {
         userRepository.findByEmail("admin@dentalcare.com")
                 .ifPresentOrElse(
-                        user -> System.out.println("ℹ️ Admin user already exists."),
+                        u -> System.out.println("ℹ️ Admin user already exists."),
                         () -> {
                             User admin = User.builder()
                                     .firstname("Super")
@@ -48,13 +67,10 @@ public class DataInitializer implements CommandLineRunner {
                                     .enabled(true)
                                     .accountLocked(false)
                                     .build();
-
                             userRepository.save(admin);
-                            System.out.println("✅ Admin user created successfully.");
-                        }
-                );
+                            System.out.println("✅ Admin user created.");
+                        });
     }
-
     private Role createRoleIfNotFound(String roleName) {
         return roleRepository.findByName(roleName)
                 .orElseGet(() -> {
@@ -66,25 +82,106 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     // 💥 Supprime les anciens rôles invalides
+
     private void deleteInvalidRoles() {
-        roleRepository.findByName("ADMIN").ifPresent(role -> {
-            roleRepository.delete(role);
-            System.out.println("❌ Role 'ADMIN' supprimé.");
-        });
-        roleRepository.findByName("USER").ifPresent(role -> {
-            roleRepository.delete(role);
-            System.out.println("❌ Role 'USER' supprimé.");
-        });
+        List.of("ADMIN", "USER").forEach(invalid ->
+                roleRepository.findByName(invalid).ifPresent(role -> roleRepository.delete(role))
+        );
     }
+
     private void detachInvalidRoles() {
         List<User> users = userRepository.findAll();
         for (User user : users) {
             Set<Role> filteredRoles = user.getRoles().stream()
-                    .filter(role -> !role.getName().equals("ADMIN") && !role.getName().equals("USER"))
+                    .filter(role -> !List.of("ADMIN", "USER").contains(role.getName()))
                     .collect(Collectors.toSet());
             user.setRoles(filteredRoles);
         }
         userRepository.saveAll(users);
+    }
+
+    private void generateFakeUsersAndPatients(Role userRole) {
+        if (userRepository.count() > 1) return;
+
+        for (int i = 0; i < 5; i++) {
+            String email = faker.internet().emailAddress();
+            User user = User.builder()
+                    .firstname(faker.name().firstName())
+                    .lastname(faker.name().lastName())
+                    .email(email)
+                    .password(passwordEncoder.encode("password"))
+                    .enabled(true)
+                    .accountLocked(false)
+                    .createdByAdmin(false)
+                    .dateOfBirth(LocalDate.of(1985 + random.nextInt(20), 1 + random.nextInt(12), 1 + random.nextInt(28)))
+                    .roles(Set.of(userRole))
+                    .build();
+            userRepository.save(user);
+
+            Patient patient = Patient.builder()
+                    .cin(faker.idNumber().valid())
+                    .nom(user.getLastname())
+                    .prenom(user.getFirstname())
+                    .email(user.getEmail())
+                    .dateNaissance(user.getDateOfBirth())
+                    .adresse(faker.address().fullAddress())
+                    .genre(random.nextBoolean() ? "Homme" : "Femme")
+                    .enabled(true)
+                    .createdByAdmin(false)
+                    .user(user)
+                    .build();
+            patientRepository.save(patient);
+        }
+
+        for (int i = 0; i < 3; i++) {
+            Patient patient = Patient.builder()
+                    .cin(faker.idNumber().valid())
+                    .nom(faker.name().lastName())
+                    .prenom(faker.name().firstName())
+                    .email(faker.internet().emailAddress())
+                    .dateNaissance(LocalDate.of(1960 + random.nextInt(40), 1 + random.nextInt(12), 1 + random.nextInt(28)))
+                    .adresse(faker.address().fullAddress())
+                    .genre(random.nextBoolean() ? "Homme" : "Femme")
+                    .enabled(true)
+                    .createdByAdmin(true)
+                    .build();
+            patientRepository.save(patient);
+        }
+
+        System.out.println("✅ Patients + utilisateurs factices générés.");
+    }
+
+    private void generateFakeRendezVous() {
+        List<Patient> patients = patientRepository.findAll();
+        if (patients.isEmpty()) return;
+
+        List<StatusRdv> statusChoices = List.of(StatusRdv.EN_ATTENTE, StatusRdv.CONFIRME, StatusRdv.ANNULE);
+
+        for (int i = 0; i < 10; i++) {
+            Patient patient = patients.get(random.nextInt(patients.size()));
+            if (patient.getUser() == null) continue;
+
+            LocalDate date = LocalDate.now().plusDays(random.nextInt(21) - 10);
+            LocalTime heureDebut = LocalTime.of(8 + random.nextInt(9), 0);
+            LocalTime heureFin = heureDebut.plusMinutes(30);
+            StatusRdv status = statusChoices.get(random.nextInt(statusChoices.size()));
+
+            RendezVous rdv = RendezVous.builder()
+                    .date(date)
+                    .heureDebut(heureDebut)
+                    .heureFin(heureFin)
+                    .patient(patient.getUser())
+                    .status(status)
+                    .type(TypeRdv.values()[random.nextInt(TypeRdv.values().length)])
+                    .motif(faker.medical().diseaseName())
+                    .praticien("Dr. Zahra")
+                    .archive(false)
+                    .build();
+
+            rendezVousRepository.save(rdv);
+        }
+
+        System.out.println("📅 Rendez-vous factices générés.");
     }
 
 }

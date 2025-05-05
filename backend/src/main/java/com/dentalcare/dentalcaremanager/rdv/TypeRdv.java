@@ -4,5 +4,6 @@ public enum TypeRdv {
     CONSULTATION,
     DETARTRAGE,
     SUIVI,
+    URGENCE,
     AUTRE
 }

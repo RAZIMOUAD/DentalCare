@@ -40,7 +40,7 @@ public class RendezVousRequest {
     private TypeRdv type; // ex: "CONSULTATION" "SUIVI", etc.
 
     private String motif;        // ex: "Urgence", "Contrôle", etc.
-    private String praticien; // ex: "Dr. Zahra"
+
 
     public RendezVous toEntity(User patient) {
         return RendezVous.builder()
@@ -51,7 +51,6 @@ public class RendezVousRequest {
                 .archive(false)
                 .motif(this.motif)
                 .type(this.type != null ? this.type : TypeRdv.CONSULTATION)
-                .praticien(this.praticien != null ? this.praticien : "Dr. Zahra")
                 .patient(patient)
                 .build();
     }

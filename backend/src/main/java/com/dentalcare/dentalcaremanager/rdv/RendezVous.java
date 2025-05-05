@@ -45,5 +45,25 @@ public class RendezVous {
 
     // ✅ Facultatif : pour futur gestion multidocteurs
     private String praticien; // ex: "Dr. Zahra"
+
+    @Version
+    private Long version;
+
+    @Column(updatable = false)
+    private LocalDate createdAt;
+
+    private LocalDate updatedAt;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDate.now();
+        this.updatedAt = this.createdAt;
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDate.now();
+    }
+
 }
 

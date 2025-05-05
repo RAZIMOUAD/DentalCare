@@ -31,6 +31,8 @@ public class NotificationEntity {
     private String message;
 
     private LocalDateTime attemptedAt;
+    @Column
+    private Integer rendezVousId;
 
     @Column(length = 1000)
     private String errorMessage; // peut être null si pas d'erreur

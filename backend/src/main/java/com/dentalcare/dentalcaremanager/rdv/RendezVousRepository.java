@@ -39,4 +39,30 @@ public interface RendezVousRepository extends JpaRepository<RendezVous, Integer>
     List<RendezVous> findAllByMonth(@Param("start") LocalDate start, @Param("end") LocalDate end);
 
 
+    @Query("""
+SELECT r FROM RendezVous r
+WHERE r.status = :status
+  AND r.date BETWEEN :start AND :end
+""")
+    List<RendezVous> findConfirmedBetweenDates(
+            @Param("status") StatusRdv status,
+            @Param("start") LocalDate start,
+            @Param("end") LocalDate end
+    );
+
+
+    @Query("""
+    SELECT CASE WHEN COUNT(r) > 0 THEN true ELSE false END
+    FROM RendezVous r
+    WHERE r.date = :date
+      AND r.heureDebut < :heureFin
+      AND r.heureFin > :heureDebut
+""")
+    boolean existsSlotConflict(
+            @Param("date") LocalDate date,
+            @Param("heureDebut") LocalTime heureDebut,
+            @Param("heureFin") LocalTime heureFin
+    );
+
+
 }

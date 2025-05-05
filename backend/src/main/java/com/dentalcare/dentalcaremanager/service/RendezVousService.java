@@ -1,5 +1,6 @@
 package com.dentalcare.dentalcaremanager.service;
 
+import com.dentalcare.dentalcaremanager.admin.RendezVousAdminResponse;
 import com.dentalcare.dentalcaremanager.dto.RendezVousRequest;
 import com.dentalcare.dentalcaremanager.dto.RendezVousResponse;
 import com.dentalcare.dentalcaremanager.rdv.StatusRdv;
@@ -25,6 +26,8 @@ public interface RendezVousService {
     void confirmRendezVous(Integer id);
     void rejectRendezVous(Integer id);
     List<RendezVousResponse> findAllByMonth(LocalDate dateInMonth);
+    List<RendezVousResponse> getConfirmedByMonth(int year, int month);
+    List<RendezVousAdminResponse> getAllForAdminByMonth(int year, int month);
 
 
 }
