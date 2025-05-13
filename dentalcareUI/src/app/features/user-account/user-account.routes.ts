@@ -4,6 +4,7 @@ import { Routes } from '@angular/router';
 import { AuthGuardUser } from '../../core/guards/auth-user.guard';
 import { UserLayoutComponent } from '../../layouts/user-layout/user-layout.component';
 import {BookingComponent} from './appointments/booking/booking.component';
+import {MesRdvComponent} from './mes-rdv/mes-rdv.component';
 
 
 export const USER_ACCOUNT_ROUTES: Routes = [
@@ -33,6 +34,10 @@ export const USER_ACCOUNT_ROUTES: Routes = [
       {
         path: 'prendre-rdv',
         component: BookingComponent
+      },
+      {
+        path: 'mes-rdv',
+        loadComponent: () => import('./mes-rdv/mes-rdv.component').then(m => m.MesRdvComponent)
       }
 
     ]

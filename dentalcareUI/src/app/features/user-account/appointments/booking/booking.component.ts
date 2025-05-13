@@ -1,22 +1,20 @@
-// src/app/features/user-account/appointments/booking/booking.component.ts
-
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, ViewChild, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { FullCalendarModule, FullCalendarComponent } from '@fullcalendar/angular';
 import { CalendarOptions } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
-import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
-import { FullCalendarModule } from '@fullcalendar/angular';
+import frLocale from '@fullcalendar/core/locales/fr';
 
-import { WebSocketService } from '../../../../core/services/websocket.service';
 import { RendezvousService } from '../../../../core/services/rendezvous.service';
-import { RdvUtilsService } from '../../../../core/services/rdv-utils.service';
 import { ToastService } from '../../../../core/services/toast.service';
+import { WebSocketService } from '../../../../core/services/websocket.service';
 
+import { RendezVousResponse } from '../../../dashboard/models/rendezvous-response.model';
 import { RendezVousRequest } from '../../../dashboard/models/rendezvous-request.model';
-import { ReservedSlot } from '../../../../core/services/rdv-utils.service';
-import { AppointmentsTableComponent } from '../../components/appointments-table/appointments-table.component';
 import { AppointmentFormComponent } from '../../components/appointment-form/appointment-form.component';
+import { AppointmentsTableComponent } from '../../components/appointments-table/appointments-table.component';
 
 @Component({
   selector: 'app-booking',
@@ -32,30 +30,31 @@ import { AppointmentFormComponent } from '../../components/appointment-form/appo
   ]
 })
 export class BookingComponent implements OnInit {
-  private rdvService = inject(RendezvousService);
-  private websocketService = inject(WebSocketService);
-  private utils = inject(RdvUtilsService);
+  private rendezvousService = inject(RendezvousService);
   private toast = inject(ToastService);
+  private websocketService = inject(WebSocketService);
+
+  @ViewChild('calendarRef') calendarComponent!: FullCalendarComponent;
 
   calendarOptions!: CalendarOptions;
-  selectedDate: string = '';
-  heureDebut: string = '';
-  heureFin: string = '';
-  selectedType: string = '';
+  reservedSlots: RendezVousResponse[] = [];
+
   showForm = false;
   showTable = true;
-
-  typeOptions: string[] = ['CONSULTATION', 'DETARTRAGE', 'URGENCE'];
-  reservedSlots: ReservedSlot[] = [];
+  selectedDate = '';
+  heureDebut = '';
+  heureFin = '';
+  selectedType = '';
 
   ngOnInit(): void {
     this.initializeCalendar();
-    this.loadRendezVous();
+    this.loadCurrentMonthConfirmedAppointments();
+    this.reloadMonth();
 
     this.websocketService.connect();
-    this.websocketService.newRdv$.subscribe(() => this.loadRendezVous());
-    this.websocketService.confirmedRdv$.subscribe(() => this.loadRendezVous());
-    this.websocketService.rejectedRdv$.subscribe(() => this.loadRendezVous());
+    this.websocketService.confirmedRdv$.subscribe(() => this.loadCurrentMonthConfirmedAppointments());
+    this.websocketService.newRdv$.subscribe(() => this.loadCurrentMonthConfirmedAppointments());
+    this.websocketService.rejectedRdv$.subscribe(() => this.loadCurrentMonthConfirmedAppointments());
   }
 
   initializeCalendar(): void {
@@ -63,64 +62,81 @@ export class BookingComponent implements OnInit {
       plugins: [dayGridPlugin, interactionPlugin],
       initialView: 'dayGridMonth',
       selectable: true,
-      events: [],
-      dateClick: this.handleDateClick.bind(this),
-      datesSet: (arg) => {
-        const year = arg.start.getFullYear();
-        const month = arg.start.getMonth() + 1;
-        this.loadRendezVousByMonth(year, month);
+      editable: false,
+      locale: frLocale,
+      headerToolbar: {
+        left: 'prev,next today',
+        center: 'title',
+        right: ''
       },
+      events: [],
+      eventClick: this.onEventClick.bind(this),
+      dateClick: this.onDateClick.bind(this),
+      datesSet: this.onMonthChange.bind(this),
     };
   }
 
-  loadRendezVous(): void {
-    this.rdvService.getAll().subscribe(data => {
-      this.reservedSlots = data;
-      this.calendarOptions.events = this.mapToCalendarEvents(data);
+  onMonthChange(arg: any): void {
+    const year = arg.start.getFullYear();
+    const month = arg.start.getMonth() + 1;
+    this.reloadMonth();
+    this.rendezvousService.getPublicByMonth(year, month).subscribe({
+      next: (rdvs) => {
+        this.reservedSlots = rdvs;
+        this.renderAppointmentsToCalendar(rdvs);
+      },
+      error: () => {
+        this.toast.error('❌ Erreur lors du chargement des RDV confirmés');
+      }
     });
   }
 
-  loadRendezVousByMonth(year: number, month: number): void {
-    this.rdvService.getByMonth(year, month).subscribe(data => {
-      this.reservedSlots = data;
-      this.calendarOptions.events = this.mapToCalendarEvents(data);
+  loadCurrentMonthConfirmedAppointments(): void {
+    const calendarApi = this.calendarComponent.getApi();
+    const currentDate = calendarApi.getDate();
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth() + 1;
+
+    this.rendezvousService.getPublicByMonth(year, month).subscribe({
+      next: (rdvs) => {
+        this.reservedSlots = rdvs;
+        this.renderAppointmentsToCalendar(rdvs);
+      },
+      error: () => {
+        this.toast.error('❌ Erreur lors du chargement des RDV confirmés');
+      }
     });
   }
 
-  mapToCalendarEvents(data: ReservedSlot[]) {
-    return data.map(rdv => ({
-      title: 'Réservé',
+  renderAppointmentsToCalendar(rdvs: RendezVousResponse[]): void {
+    const events = rdvs.map(rdv => ({
+      id: rdv.id.toString(),
+      title: `${rdv.heureDebut.slice(0, 5)} ${rdv.type}`,
       start: `${rdv.date}T${rdv.heureDebut}`,
       end: `${rdv.date}T${rdv.heureFin}`,
-      color: '#ef4444'
+      color: '#2563eb'
     }));
+
+    const calendarApi = this.calendarComponent.getApi();
+    calendarApi.removeAllEvents(); // important pour éviter la duplication
+    events.forEach(event => calendarApi.addEvent(event));
   }
 
-  handleDateClick(arg: any): void {
-    this.selectedDate = arg.dateStr;
-    this.heureDebut = '';
-    this.heureFin = '';
+
+  onDateClick(info: any): void {
+    this.selectedDate = info.dateStr;
     this.showForm = true;
   }
 
-  getAvailableSlots(): string[] {
-    return this.utils.getAvailableSlots(this.selectedDate, this.reservedSlots);
-  }
-
-  onSlotSelected(slotString: string): void {
-    const [start, end] = slotString.split(' - ');
-    this.heureDebut = start;
-    this.heureFin = end;
+  onEventClick(info: any): void {
+    this.toast.info(`⛔ Ce créneau est déjà réservé.\nDate : ${info.event.startStr}`);
   }
 
   validerRDV(request: RendezVousRequest): void {
-    if (!request) return;
-
-    this.rdvService.createRendezVous(request).subscribe({
+    this.rendezvousService.createRendezVous(request).subscribe({
       next: () => {
-        this.toast.success('✅ Rendez-vous confirmé avec succès.');
+        this.toast.success('✅ Rendez-vous en attente de confirmation.');
         this.showForm = false;
-        this.loadRendezVous();
       },
       error: (err) => {
         const msg = err?.error?.message || '❌ Une erreur est survenue.';
@@ -140,4 +156,15 @@ export class BookingComponent implements OnInit {
   toggleTable(): void {
     this.showTable = !this.showTable;
   }
+  reloadMonth(): void {
+    const calendarApi = this.calendarComponent.getApi();
+    const date = calendarApi.getDate();
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    this.rendezvousService.getPublicByMonth(year, month).subscribe((rdvs) => {
+      this.reservedSlots = rdvs;
+      this.renderAppointmentsToCalendar(rdvs); // ✅
+    });
+  }
+
 }

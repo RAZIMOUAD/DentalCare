@@ -19,7 +19,7 @@ export class UserSidebarComponent {
   private authService = inject(AuthService);
   navItems = [
     { label: 'Accueil', icon: 'Home', route: '/user-account/accueil' },
-    { label: 'Mes RDV', icon: 'Calendar', route: '/user-account/rendezvous' },
+    { label: 'Mes RDV', icon: 'Calendar', route: '/user-account/mes-rdv' },
     { label: 'Prendre RDV', icon: 'CalendarDays', route: '/user-account/prendre-rdv' },
     { label: 'Messages', icon: 'MessageSquare', route: '/user-account/messages' },
     { label: 'Mon Profil', icon: 'UserCog', route: '/user-account/profil' }

@@ -1,36 +1,13 @@
-
-<section class="px-6 py-8 max-w-7xl mx-auto text-gray-800">
-  <!-- 🗓️ Calendrier -->
-  <div class="bg-white rounded-xl border border-blue-200 shadow p-5 mb-10">
-    <full-calendar [options]="calendarOptions" class="rounded-md"></full-calendar>
+<section class="px-6 py-10 max-w-6xl mx-auto text-gray-800">
+  <!-- ✅ Calendrier dynamique -->
+  <div class="bg-white border border-blue-200 shadow-xl rounded-2xl p-6 mb-8">
+    <full-calendar #calendarRef [options]="calendarOptions" class="rounded-md"></full-calendar>
   </div>
 
-  <!-- 🔄 Boutons d'action -->
-  <div class="flex flex-wrap justify-between items-center mb-6 gap-4">
-    <div class="text-lg font-semibold text-blue-700">
-      Mes Rendez-vous
-    </div>
+  <!-- ✅ Titre visible -->
+  <h2 class="text-2xl font-semibold text-blue-700 mb-4">📅 Prise de Rendez-vous</h2>
 
-    <div class="flex gap-4">
-      <button
-        class="px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition"
-        (click)="toggleTable()"
-      >
-        📋 Voir la liste
-      </button>
-      <button
-        class="px-4 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 transition"
-        (click)="showForm = true"
-      >
-        ➕ Nouveau RDV
-      </button>
-    </div>
-  </div>
-
-  <!-- 📄 Table des RDVs -->
-  <app-appointments-table *ngIf="showTable"></app-appointments-table>
-
-  <!-- 📝 Formulaire de réservation -->
+  <!-- ✅ Formulaire affiché uniquement après clic sur une date -->
   <app-appointment-form
     *ngIf="showForm"
     [selectedDate]="selectedDate"
@@ -38,5 +15,4 @@
     (cancel)="annulerRDV()"
     (submit)="validerRDV($event)">
   </app-appointment-form>
-
 </section>
