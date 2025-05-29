@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { RendezVousRequest } from '../../../dashboard/models/rendezvous-request.model';
 import { RdvUtilsService, ReservedSlot } from '../../../../core/services/rdv-utils.service';
 import { LucideIconsModule } from '@shared/modules/lucide-icons.module';
+import { TypeRdv} from '../../../../core/constants/rdv-types.model';
 
 @Component({
   selector: 'app-appointment-form',
@@ -15,6 +16,7 @@ import { LucideIconsModule } from '@shared/modules/lucide-icons.module';
 export class AppointmentFormComponent {
   @Input() selectedDate!: string;
   @Input() reservedSlots: ReservedSlot[] = [];
+  @Input() type: TypeRdv = 'CONSULTATION';
 
   @Output() submit = new EventEmitter<RendezVousRequest>();
   @Output() cancel = new EventEmitter<void>();
@@ -22,6 +24,7 @@ export class AppointmentFormComponent {
   typeOptions = ['CONSULTATION', 'DETARTRAGE', 'URGENCE'];
   selectedSlot: string = '';
   selectedType: string = '';
+  motif: string = '';
 
   constructor(private rdvUtils: RdvUtilsService) {}
 
@@ -36,13 +39,14 @@ export class AppointmentFormComponent {
     }
 
     const [heureDebut, heureFin] = this.selectedSlot.split(' - ');
-
     const request: RendezVousRequest = {
       date: this.selectedDate,
       heureDebut,
       heureFin,
-      type: this.selectedType
+      type: this.selectedType as TypeRdv,
+      motif: this.motif
     };
+
 
     this.submit.emit(request);
   }

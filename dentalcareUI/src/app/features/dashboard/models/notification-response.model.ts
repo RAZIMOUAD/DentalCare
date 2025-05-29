@@ -5,4 +5,5 @@ export interface NotificationResponse {
   status: string;           // ex: "SUCCES", "ECHEC"
   message: string;
   attemptedAt: string;      // LocalDateTime → ISO string
+
 }

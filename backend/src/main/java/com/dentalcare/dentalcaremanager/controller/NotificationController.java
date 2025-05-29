@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/v1/notifications")
+@RequestMapping("/notifications")
 @RequiredArgsConstructor
 @Slf4j
 public class NotificationController {
@@ -27,7 +27,7 @@ public class NotificationController {
      * Récupérer toutes les notifications (admin).
      */
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public List<NotificationResponse> getAllNotifications() {
         log.info("Récupération de toutes les notifications");
 
@@ -41,7 +41,7 @@ public class NotificationController {
      * Récupérer les notifications du patient connecté.
      */
     @GetMapping("/user")
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasAuthority('USER')")
     public List<NotificationResponse> getUserNotifications(@AuthenticationPrincipal UserDetails userDetails) {
         String email = userDetails.getUsername();
         log.info("Récupération des notifications pour {}", email);

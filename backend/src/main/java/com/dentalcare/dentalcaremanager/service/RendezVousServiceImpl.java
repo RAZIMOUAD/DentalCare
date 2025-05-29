@@ -222,5 +222,35 @@ public void rejectRendezVous(Integer id) {
                 .map(RendezVousAdminResponse::fromEntity)
                 .collect(Collectors.toList());
     }
+    @Override
+    public RendezVousResponse update(Integer id, RendezVousRequest request) {
+        RendezVous rendezVous = rendezVousRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Rendez-vous introuvable avec ID: " + id));
+
+        // 🔐 Optionnel : contrôle des droits ici (admin ou owner)
+
+        // ✅ Mise à jour des champs
+        rendezVous.setDate(request.getDate());
+        rendezVous.setHeureDebut(request.getHeureDebut());
+        rendezVous.setHeureFin(request.getHeureFin());
+        rendezVous.setType(request.getType());
+        rendezVous.setMotif(request.getMotif());
+
+        // 🔁 Mise à jour versionnée (optimistic locking si activé)
+        rendezVous = rendezVousRepository.save(rendezVous);
+
+        return RendezVousResponse.fromEntity(rendezVous);
+        // ou convertisseur vers DTO
+    }
+    @Override
+    public List<RendezVous> searchByNomOrEmail(String query) {
+        System.out.println("🔍 Recherche backend : " + query);
+        return rendezVousRepository.searchByNomOrEmail(query);
+    }
+    @Override
+    public List<RendezVous> searchByDate(LocalDate date) {
+        System.out.println("🔍 Recherche backend : " + date);
+        return rendezVousRepository.findByDate(date);
+    }
 
 }

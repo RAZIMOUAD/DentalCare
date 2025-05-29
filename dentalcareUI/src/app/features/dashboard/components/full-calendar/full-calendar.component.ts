@@ -1,138 +1,114 @@
-import { Component, OnInit } from '@angular/core';
+import {
+  Component,
+  ViewChild,
+  inject,
+  OnInit,
+  OnChanges,
+  SimpleChanges,
+  Input, EventEmitter, Output
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FullCalendarModule } from '@fullcalendar/angular'; // wrapper officiel Angular
-import dayGridPlugin from '@fullcalendar/daygrid';
+import {
+  FullCalendarModule,
+  FullCalendarComponent as FCComponent
+} from '@fullcalendar/angular';
 import timeGridPlugin from '@fullcalendar/timegrid';
-import interactionPlugin from '@fullcalendar/interaction'; // pour clics et drag
-import { CalendarOptions, EventClickArg, DateSelectArg, EventInput} from '@fullcalendar/core';
-import { CalendarModalComponent } from '../calendar-modal/calendar-modal.component';
+import { CalendarOptions } from '@fullcalendar/core';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import interactionPlugin from '@fullcalendar/interaction';
+import frLocale from '@fullcalendar/core/locales/fr';
+
 import { RendezvousService } from '../../../../core/services/rendezvous.service';
-import { RendezVousResponse } from '../../models/rendezvous-response.model';
-import { LucideIconsModule } from '@shared/modules/lucide-icons.module';
+import { RendezVousAdminResponse } from '../../models/rendezvous-admin-response.model';
+
 @Component({
   selector: 'app-full-calendar',
   standalone: true,
-  imports: [CommonModule, FullCalendarModule, CalendarModalComponent, LucideIconsModule],
+  imports: [CommonModule, FullCalendarModule],
   templateUrl: './full-calendar.component.html',
-  styleUrls: ['./full-calendar.component.css']
 })
-export class FullCalendarComponent implements OnInit {
-  showModal: boolean = false;
-  patientName: string = '';
-  startTime: string = '';
-  endTime: string = '';
-  motif: string = '';
-  type: string = 'CONSULTATION';
-  praticien: string = 'Dr. Zahra';
+export class FullCalendarComponent implements OnInit, OnChanges {
+  private rendezvousService = inject(RendezvousService);
+
+  @Input() selectedMonth!: string; // format YYYY-MM
+  @Input() refreshTrigger!: number; // 🔁 utilisé pour forcer le rechargement
+  @Output() rdvClicked = new EventEmitter<RendezVousAdminResponse>();
+  @ViewChild('calendarRef') calendarComponent!: FCComponent;
 
   calendarOptions: CalendarOptions = {
     plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
-    initialView: 'timeGridWeek',
+    initialView: 'dayGridMonth',
     headerToolbar: {
       left: 'prev,next today',
       center: 'title',
       right: 'dayGridMonth,timeGridWeek,timeGridDay'
     },
-    selectable: true,
-    editable: true,
-    nowIndicator: true,
-    weekends: true,
-    allDaySlot: false,
+    locale: frLocale,
     events: [],
-    select: this.handleDateSelect.bind(this),
-    eventClick: this.handleEventClick.bind(this),
-    eventDrop: this.handleEventChange.bind(this),
-    eventResize: this.handleEventChange.bind(this)
+    editable: false,
+    selectable: false,
+    height: 'auto',
+    eventDidMount: (info) => {
+      info.el.style.cursor = 'pointer'; // ✅ curseur main
+    },
+    eventClick: this.onEventClick.bind(this),
+    datesSet: () => this.loadEvents()
   };
-  constructor(private rendezvousService: RendezvousService) {}
 
+  /** Chargement initial des événements (mois en cours) */
   ngOnInit(): void {
-    const today = new Date().toISOString().split('T')[0];
-    this.rendezvousService.getByDate(today).subscribe({
-      next: (rdvs) => {
-        this.calendarOptions.events = this.mapToEvents(rdvs);
+    this.loadEvents();
+  }
+
+  /** Synchronisation lors du changement d'@Input() */
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['selectedMonth'] && this.selectedMonth) {
+      const [year, month] = this.selectedMonth.split('-').map(Number);
+      const date = `${year}-${month.toString().padStart(2, '0')}-01`;
+      this.calendarComponent?.getApi().gotoDate(date);
+      this.loadEvents();
+    }
+    if (changes['refreshTrigger'] && !changes['refreshTrigger'].firstChange) {
+      console.log('🔁 Rafraîchissement déclenché');
+      this.loadEvents();
+    }
+  }
+
+  /** Chargement des événements pour le mois visible */
+  loadEvents(): void {
+    const calendarApi = this.calendarComponent?.getApi();
+    const currentDate = calendarApi?.getDate() ?? new Date();
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth() + 1;
+
+    this.rendezvousService.getAllAdminByMonth(year, month).subscribe({
+      next: (rdvs: RendezVousAdminResponse[]) => {
+        const events = rdvs.map(rdv => ({
+          id: rdv.id.toString(),
+          title: `${rdv.nomPatient} (${rdv.status})`,
+          start: `${rdv.date}T${rdv.heureDebut}`,
+          end: `${rdv.date}T${rdv.heureFin}`,
+          color: this.getColorByStatus(rdv.status),
+          extendedProps: rdv
+        }));
+
+        calendarApi?.removeAllEvents();
+        events.forEach(event => calendarApi?.addEvent(event));
       },
-      error: (err) => {
-        console.error('Erreur lors du chargement des RDV :', err);
-      },
+      error: err => console.error('Erreur lors du chargement des RDV admin', err)
     });
   }
-  private mapToEvents(rdvs: RendezVousResponse[]): EventInput[] {
-    return rdvs.map((rdv) => ({
-      title: `${rdv.nomPatient} (${rdv.status})`,
-      start: `${rdv.date}T${rdv.heureDebut}`,
-      end: `${rdv.date}T${rdv.heureFin}`,
-      color: this.getColorByStatus(rdv.status)
-    }));
+  private onEventClick(info: any): void {
+    const rdv = info.event.extendedProps as RendezVousAdminResponse;
+    this.rdvClicked.emit(rdv);
   }
+  /** Couleurs personnalisées selon le statut du RDV */
   private getColorByStatus(status: string): string {
     switch (status) {
-      case 'CONFIRME': return 'green';
-      case 'ANNULE': return 'red';
-      case 'EN_ATTENTE':
-      default: return 'orange';
+      case 'CONFIRME': return '#4CAF50';     // Vert
+      case 'EN_ATTENTE': return '#FFC107';   // Jaune
+      case 'ANNULE': return '#F44336';       // Rouge
+      default: return '#2196F3';             // Bleu
     }
-  }
-  /**
-   * Lorsqu'on sélectionne un créneau (clic-glisser ou clic sur jour)
-   */
-  handleDateSelect(selectInfo: DateSelectArg): void {
-    this.startTime = selectInfo.startStr;
-    this.endTime = selectInfo.endStr;
-    this.showModal = true;
-
-// 🔁 Appeler backend plus tard pour persister
-
-  }
-// 🔁 Appeler backend plus tard pour persister
-  onAppointmentCreated(event: {
-    patientName: string;
-    startTime: string;
-    endTime: string;
-    motif: string;
-    type: string;
-    praticien: string;
-  }): void {
-    const calendarApi = (document.querySelector('full-calendar') as any)?.getApi();
-    if (calendarApi) {
-      calendarApi.addEvent({
-        title: `${event.patientName} (${event.type})`,
-        start: event.startTime,
-        end: event.endTime,
-        allDay: false,
-        color: 'orange'
-      });
-    }
-    this.resetModal();
-  }
-  /**
-   * Lorsqu'on clique sur un événement existant
-   */
-  handleEventClick(clickInfo: EventClickArg): void {
-    if (confirm(`Supprimer le rendez-vous : "${clickInfo.event.title}" ?`)) {
-      clickInfo.event.remove();
-      // 🔁 Appeler backend pour suppression réelle plus tard
-    }
-  }
-
-  /**
-   * Lorsqu'on modifie un événement (drag or resize)
-   */
-  handleEventChange(changeInfo: any): void {
-    console.log('Événement modifié :', changeInfo.event);
-    // 🔁 Appeler backend pour mise à jour
-  }
-
-  closeModal(): void {
-    this.resetModal();
-  }
-  private resetModal(): void {
-    this.showModal = false;
-    this.patientName = '';
-    this.startTime = '';
-    this.endTime = '';
-    this.motif = '';
-    this.type = 'CONSULTATION';
-    this.praticien = 'Dr. Zahra';
   }
 }

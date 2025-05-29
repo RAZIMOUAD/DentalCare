@@ -64,5 +64,12 @@ WHERE r.status = :status
             @Param("heureFin") LocalTime heureFin
     );
 
+    @Query("""
+    SELECT r FROM RendezVous r
+    WHERE LOWER(r.patient.firstname) LIKE LOWER(CONCAT('%', :query, '%'))
+       OR LOWER(r.patient.lastname) LIKE LOWER(CONCAT('%', :query, '%'))
+       OR LOWER(r.patient.email) LIKE LOWER(CONCAT('%', :query, '%'))
+""")
+    List<RendezVous> searchByNomOrEmail(@Param("query") String query);
 
 }

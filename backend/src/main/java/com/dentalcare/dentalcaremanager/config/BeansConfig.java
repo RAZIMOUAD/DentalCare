@@ -48,25 +48,34 @@ public class BeansConfig {
         return new ApplicationAuditAware();
     }
 
+    /**
+     * ✅ Filtre CORS global compatible REST + WebSocket + SockJS
+     */
     @Bean
     public CorsFilter corsFilter() {
-        final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        final CorsConfiguration config = new CorsConfiguration();
+        CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.setAllowedOrigins(Collections.singletonList("http://localhost:4200"));
+
+        // 🔐 Important pour SockJS : setAllowedOriginPatterns (et non setAllowedOrigins)
+        config.setAllowedOriginPatterns(Collections.singletonList("http://localhost:4200"));
+
         config.setAllowedHeaders(Arrays.asList(
                 HttpHeaders.ORIGIN,
                 HttpHeaders.CONTENT_TYPE,
                 HttpHeaders.ACCEPT,
                 HttpHeaders.AUTHORIZATION
         ));
+
         config.setAllowedMethods(Arrays.asList(
                 "GET",
                 "POST",
-                "DELETE",
                 "PUT",
-                "PATCH"
+                "DELETE",
+                "PATCH",
+                "OPTIONS" // ✅ important pour preflight
         ));
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);
 

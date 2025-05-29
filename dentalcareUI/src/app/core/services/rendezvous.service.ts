@@ -119,5 +119,27 @@ export class RendezvousService {
       })
     );
   }
+  searchRdvByDate(date: string): Observable<RendezVousResponse[]> {
+    return this.http.get<RendezVousResponse[]>(`${this.api}/rendezvous/search/date`, {
+      params: { date }
+    });
+  }
+  searchRdvByNameOrEmail(query: string): Observable<RendezVousResponse[]> {
+    return this.http.get<RendezVousResponse[]>(`${this.api}/rendezvous/search`, {
+      params: { query }
+    });
+  }
+
+  searchAdminRdvByNameOrEmail(query: string): Observable<RendezVousAdminResponse[]> {
+    return this.http.get<RendezVousAdminResponse[]>(`${this.api}/rendezvous/admin/search`, {
+      params: { query }
+    });
+  }
+
+  searchAdminRdvByDate(date: string): Observable<RendezVousAdminResponse[]> {
+    return this.http.get<RendezVousAdminResponse[]>(`${this.api}/rendezvous/admin/search/date`, {
+      params: { date }
+    });
+  }
 
 }

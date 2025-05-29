@@ -3,6 +3,7 @@ package com.dentalcare.dentalcaremanager.service;
 import com.dentalcare.dentalcaremanager.admin.RendezVousAdminResponse;
 import com.dentalcare.dentalcaremanager.dto.RendezVousRequest;
 import com.dentalcare.dentalcaremanager.dto.RendezVousResponse;
+import com.dentalcare.dentalcaremanager.rdv.RendezVous;
 import com.dentalcare.dentalcaremanager.rdv.StatusRdv;
 
 
@@ -28,6 +29,10 @@ public interface RendezVousService {
     List<RendezVousResponse> findAllByMonth(LocalDate dateInMonth);
     List<RendezVousResponse> getConfirmedByMonth(int year, int month);
     List<RendezVousAdminResponse> getAllForAdminByMonth(int year, int month);
+    RendezVousResponse update(Integer id, RendezVousRequest request);
+    List<RendezVous> searchByNomOrEmail(String query);
+    List<RendezVous> searchByDate(LocalDate date);
+
 
 
 }

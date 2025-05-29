@@ -25,7 +25,8 @@ public class PublicSecurityConfig {
                         "/swagger-ui/**",
                         "/webjars/**",
                         "/swagger-ui.html",
-                        "/api/v1/rendezvous/public/**") // ✅ tous les publics
+                        "/api/v1/rendezvous/public/**",
+                        "/ws/**") // ✅ tous les publics
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> auth
