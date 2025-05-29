@@ -1,6 +1,7 @@
 export interface RendezVousRequest {
-  date: string;        // Format ISO: 'YYYY-MM-DD'
-  heureDebut: string;  // Format: 'HH:mm'
-  heureFin: string;// Format: 'HH:mm'
-  type: string;
+  date: string;         // 'YYYY-MM-DD'
+  heureDebut: string;   // 'HH:mm'
+  heureFin: string;     // 'HH:mm'
+  type: 'CONSULTATION' | 'SUIVI' | 'DETARTRAGE' | 'AUTRE';
+  motif?: string;
 }

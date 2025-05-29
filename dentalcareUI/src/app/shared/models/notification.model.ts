@@ -5,4 +5,5 @@ export interface Notification {
   status: 'SUCCESS' | 'FAILURE';
   message: string;
   attemptedAt: string; // Date ISO au format backend
+  justReceived?: boolean;
 }

@@ -102,13 +102,13 @@ public class RendezVousController {
     }
 
 //Suppression par l’admin
-    @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority(T(com.dentalcare.dentalcaremanager.security.RoleNames).ADMIN)")
+@DeleteMapping("/{id}")
+@PreAuthorize("hasAuthority(T(com.dentalcare.dentalcaremanager.security.RoleNames).ADMIN)")
+public ResponseEntity<Void> deleteById(@PathVariable Integer id) {
+    rendezVousService.deleteById(id);
+    return ResponseEntity.ok().build(); // ✅ pas de body = pas d'erreur Angular
+}
 
-    public ResponseEntity<String> deleteById(@PathVariable Integer id) {
-        rendezVousService.deleteById(id);
-        return ResponseEntity.ok("Rendez-vous supprimé avec succès.");
-    }
     @GetMapping("/public/by-month")
     @PermitAll
     public ResponseEntity<List<RendezVousResponse>> getPublicMonth(
@@ -127,6 +127,54 @@ public class RendezVousController {
                 .getAllForAdminByMonth(year, month);
 
         return ResponseEntity.ok(responses);
+    }
+    @PutMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority(T(com.dentalcare.dentalcaremanager.security.RoleNames).ADMIN, T(com.dentalcare.dentalcaremanager.security.RoleNames).USER)")
+    public ResponseEntity<RendezVousResponse> update(
+            @PathVariable Integer id,
+            @RequestBody @Valid RendezVousRequest request) {
+        return ResponseEntity.ok(rendezVousService.update(id, request));
+    }
+    @GetMapping("/search/date")
+    @PreAuthorize("hasAuthority(T(com.dentalcare.dentalcaremanager.security.RoleNames).ADMIN)")
+    public ResponseEntity<List<RendezVousResponse>> searchByDate(
+            @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+        List<RendezVous> results = rendezVousService.searchByDate(date);
+        List<RendezVousResponse> dtos = results.stream()
+                .map(RendezVousResponse::fromEntity)
+                .toList();
+
+        return ResponseEntity.ok(dtos);
+    }
+
+    @GetMapping("/search")
+    @PreAuthorize("hasAuthority(T(com.dentalcare.dentalcaremanager.security.RoleNames).ADMIN)")
+    public ResponseEntity<List<RendezVousResponse>> searchByNomOrEmail(@RequestParam("query") String query) {
+        List<RendezVous> results = rendezVousService.searchByNomOrEmail(query);
+        List<RendezVousResponse> dtos = results.stream()
+                .map(RendezVousResponse::fromEntity)
+                .toList();
+
+        return ResponseEntity.ok(dtos);
+    }
+    @GetMapping("/admin/search")
+    @PreAuthorize("hasAuthority(T(com.dentalcare.dentalcaremanager.security.RoleNames).ADMIN)")
+    public ResponseEntity<List<RendezVousAdminResponse>> searchAdminByQuery(@RequestParam("query") String query) {
+        List<RendezVous> results = rendezVousService.searchByNomOrEmail(query);
+        List<RendezVousAdminResponse> dtos = results.stream()
+                .map(RendezVousAdminResponse::fromEntity)
+                .toList();
+        return ResponseEntity.ok(dtos);
+    }
+
+    @GetMapping("/admin/search/date")
+    @PreAuthorize("hasAuthority(T(com.dentalcare.dentalcaremanager.security.RoleNames).ADMIN)")
+    public ResponseEntity<List<RendezVousAdminResponse>> searchAdminByDate(@RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+        List<RendezVous> results = rendezVousService.searchByDate(date);
+        List<RendezVousAdminResponse> dtos = results.stream()
+                .map(RendezVousAdminResponse::fromEntity)
+                .toList();
+        return ResponseEntity.ok(dtos);
     }
 
 }

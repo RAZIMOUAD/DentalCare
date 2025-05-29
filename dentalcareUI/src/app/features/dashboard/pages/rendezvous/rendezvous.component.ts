@@ -1,263 +1,222 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import {Component, ViewChild} from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
-import { RendezvousService } from '../../../../core/services/rendezvous.service';
-import { RendezVousResponse } from '../../models/rendezvous-response.model';
-import { LucideIconsModule } from '@shared/modules/lucide-icons.module';
-import { FullCalendarModule } from '@fullcalendar/angular'; // wrapper Angular
-import dayGridPlugin from '@fullcalendar/daygrid';
-import timeGridPlugin from '@fullcalendar/timegrid';
-import interactionPlugin from '@fullcalendar/interaction';
-import { CalendarOptions, EventClickArg } from '@fullcalendar/core';
-import { Subject, takeUntil } from 'rxjs';
-import { MatDialog } from '@angular/material/dialog';
-import { NotificationService } from '@shared/services/notification.service';
-import {ConfirmationDialogComponent} from '../../components/confirmation-dialog/confirmation-dialog.component';
-import {
-  trigger,
-  transition,
-  style,
-  animate,
-  query,
-  stagger
-} from '@angular/animations';
+import { FullCalendarComponent } from '../../components/full-calendar/full-calendar.component';
+import { FiltersBarComponent } from '../../components/filters-bar/filters-bar.component';
+import {LucideIconsModule} from '@shared/modules/lucide-icons.module';
+import {RendezvousService} from '../../../../core/services/rendezvous.service';
+import {RendezVousRequest} from '../../models/rendezvous-request.model';
+import { CalendarModalComponent } from '../../components/calendar-modal/calendar-modal.component';
+import {RendezVousAdminResponse} from '../../models/rendezvous-admin-response.model';
+import {TypeRdv} from '../../../../core/constants/rdv-types.model';
+import {CalendarModalEditComponent} from '../../components/calendar-modal-edit/calendar-modal-edit.component';
+import {RendezVousResponse} from '../../models/rendezvous-response.model';
+import  { CalendarSearchModalComponent} from '../../components/calendar-search-modal/calendar-search-modal.component';
+import {MatDialog} from '@angular/material/dialog';
+import{ ConfirmationDialogComponent} from '../../components/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'app-rendezvous',
   standalone: true,
   imports: [
     CommonModule,
-    RouterModule,
-    FullCalendarModule, LucideIconsModule
+    FullCalendarComponent,
+    FiltersBarComponent,
+    LucideIconsModule,
+    CalendarModalEditComponent,
+    CalendarModalComponent,
+    CalendarSearchModalComponent,
+    ConfirmationDialogComponent
   ],
   templateUrl: './rendezvous.component.html',
-  styleUrls: ['./rendezvous.component.css'],
-  animations: [
-    trigger('fadeList', [
-      transition(':enter', [
-        query('.rdv-item', [
-          style({ opacity: 0, transform: 'translateY(20px)' }),
-          stagger(100, [
-            animate('400ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
-          ])
-        ])
-      ])
-    ])
-  ]
+  styleUrls: ['./rendezvous.component.css']
 })
-export class RendezvousComponent implements OnInit, OnDestroy {
-  private destroy$ = new Subject<void>();
-  rendezvousList: RendezVousResponse[] = [];
-  loading = true;
-  error: string | null = null;
- // selectedEvent: any = null; a utiliser si nécessaire
-  // Configuration améliorée du calendrier
-  calendarOptions: CalendarOptions = {
-    plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
-    initialView: 'timeGridWeek',
-    headerToolbar: {
-      left: 'prev,next today',
-      center: 'title',
-      right: 'dayGridMonth,timeGridWeek,timeGridDay'
-    },
-    selectable: false,
-    editable: false,
-    locale: 'fr',
-    eventClick: this.handleEventClick.bind(this),
-    eventDidMount: this.handleEventMount.bind(this),
-    events: (fetchInfo, successCallback, failureCallback) => {
-      this.rendezvousService.getAll().pipe(takeUntil(this.destroy$)).subscribe({
-        next: (data) => {
-          this.rendezvousList = data;
-          const events = this.mapToCalendarEvents(data);
-          successCallback(events);
-        },
-        error: (err) => {
-          this.error = "Impossible de charger les rendez-vous.";
-          this.notificationService.showError("Erreur lors du chargement des rendez-vous");
-          console.error("Erreur lors du chargement :", err);
-          failureCallback(err);
-        }
-      });
-    }
-  };
+export class RendezvousComponent {
+  @ViewChild('calendarRef') calendarRef!: FullCalendarComponent;
+
+  selectedMonth = this.formatMonth(new Date());
+  showModal = false;
+  refreshTrigger: number = 0;
+  showEditModal = false;
+  rdvToEdit: RendezVousAdminResponse | null = null;
+  // Champs de formulaire
+  patientName = '';
+  startTime = '';
+  endTime = '';
+  motif = '';
+  type = 'CONSULTATION';
+  praticien = 'Dr. Zahra';
+  showSearchModal = false;
+  rdvsFound: RendezVousResponse[] = [];
+  searchResults: RendezVousAdminResponse[] = [];
+  showSearchResults = false;
+  showDeleteConfirm = false;
+  rdvToDeleteId: number | null = null;
+
 
   constructor(private rendezvousService: RendezvousService,
-              private dialog: MatDialog,
-              private notificationService: NotificationService) {}
+              private dialog: MatDialog) {}
 
-  ngOnInit(): void {
-    this.fetchRendezVous();
-    // Rafraîchissement automatique toutes les 5 minutes
-    this.setupAutoRefresh();
+  onMonthChanged(month: string) {
+    this.selectedMonth = month;
   }
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
+  onOpenModal(): void {
+    this.showModal = true;
   }
-  /** 🔄 Configuration du rafraîchissement automatique */
-  private setupAutoRefresh(): void {
-    setInterval(() => {
-      if (!this.loading) {
-        this.fetchRendezVous();
-      }
-    }, 300000); // 5 minutes
+  onRdvClicked(rdv: RendezVousAdminResponse): void {
+    this.rdvToEdit = rdv;
+    this.showEditModal = true;
+  }
+  onCloseEditModal(): void {
+    this.showEditModal = false;
+    this.rdvToEdit = null;
+  }
+  onRefresh(): void {
+    this.refreshTrigger = this.refreshTrigger + 1;
+  }
+  onCloseModal(): void {
+    this.showModal = false;
+  }
+  onOpenSearchModal(): void {
+    this.showSearchModal = true;
   }
 
-  /** 🔄 Appel API pour charger les rendez-vous */
-  fetchRendezVous(): void {
-    this.loading = true;
-    this.rendezvousService.getAll().pipe(takeUntil(this.destroy$)).subscribe({
-      next: (data) => {
-        this.rendezvousList = data;
-        this.calendarOptions.events = this.mapToCalendarEvents(data);
-        this.loading = false;
+  onCloseSearchModal(): void {
+    this.showSearchModal = false;
+    this.rdvsFound = [];
+  }
+  onAppointmentUpdated(data: {
+    date: string;
+    heureDebut: string;
+    heureFin: string;
+    motif: string;
+    type: 'CONSULTATION' | 'SUIVI' | 'DETARTRAGE' | 'AUTRE';
+  }): void {
+    if (!this.rdvToEdit) return;
+
+    this.rendezvousService.updateRendezVous(this.rdvToEdit.id, {
+      date: data.date,
+      heureDebut: data.heureDebut,
+      heureFin: data.heureFin,
+      motif: data.motif,
+      type: data.type as TypeRdv
+    }).subscribe({
+      next: () => {
+        this.refreshTrigger++;
+        this.showEditModal = false;
+      },
+      error: err => console.error('Erreur modification RDV', err)
+    });
+  }
+  onAppointmentCreated(event: {
+    startTime: string;
+    endTime: string;
+    motif: string;
+    type: string;
+    praticien: string;
+  }): void {
+    const startDateTime = new Date(event.startTime);
+    const endDateTime = new Date(event.endTime);
+
+    const request: RendezVousRequest = {
+      date: startDateTime.toISOString().split('T')[0],                 // YYYY-MM-DD
+      heureDebut: startDateTime.toTimeString().substring(0, 5),        // HH:mm
+      heureFin: endDateTime.toTimeString().substring(0, 5),            // HH:mm
+      type: event.type as 'CONSULTATION' | 'SUIVI' | 'DETARTRAGE' | 'AUTRE',
+      motif: event.motif
+    };
+
+    this.rendezvousService.createRendezVous(request).subscribe({
+      next: () => {
+        this.refreshTrigger++;
+        this.showModal = false;
+      },
+      error: err => console.error('Erreur création RDV', err)
+    });
+  }
+
+  private formatMonth(date: Date): string {
+    return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}`;
+  }
+
+  onSearch(event: { mode: 'name' | 'date', term: string }): void {
+    if (!event.term || event.term.trim() === '') {
+      alert("❌ Veuillez entrer une valeur de recherche.");
+      return;
+    }
+
+    const request$ =
+      event.mode === 'name'
+        ? this.rendezvousService.searchAdminRdvByNameOrEmail(event.term.trim())
+        : this.rendezvousService.searchAdminRdvByDate(event.term.trim());
+
+    request$.subscribe({
+      next: (results) => {
+        console.log("✅ Résultats reçus :", results);
+        if (!results || results.length === 0) {
+          alert("📭 Aucun rendez-vous trouvé.");
+          return;
+        }
+        // ✅ Cas recherche par date → rediriger le calendrier vers ce jour
+        if (event.mode === 'date') {
+          const targetDate = results[0].date;
+          const calendarApi = this.calendarRef?.calendarComponent?.getApi();
+          if (calendarApi) {
+            calendarApi.gotoDate(targetDate);           // Aller à la date
+            calendarApi.changeView('timeGridDay');       // Vue jour
+            this.refreshTrigger++;                       // Rechargement
+            this.showSearchModal = false;
+            return;
+          }
+        }
+        if (results.length === 1) {
+          // ✅ Un seul résultat → ouvrir en modification
+          this.rdvToEdit = results[0];
+          this.showEditModal = true;
+          this.showSearchModal = false;
+        } else {
+          // 🔍 Plusieurs résultats : afficher liste à choisir
+          this.searchResults = results; // Crée une propriété pour stocker les résultats
+          this.showSearchResults = true; // Active un bloc *ngIf dans ton HTML
+          this.showSearchModal = false;
+        }
       },
       error: (err) => {
-        this.error = "Impossible de charger les rendez-vous.";
-        this.notificationService.showError("Erreur lors du chargement des rendez-vous");
-        console.error("Erreur lors du chargement :", err);
-        this.loading = false;
+        console.error("Erreur lors de la recherche :", err);
+        alert("❌ Une erreur est survenue lors de la recherche. Vérifiez le terme ou réessayez plus tard.");
       }
     });
   }
-
-  /** ✅ Transforme la liste des RDV en événements FullCalendar */
-  private mapToCalendarEvents(rdvList: RendezVousResponse[]) {
-    return rdvList.map(rdv => ({
-      id: rdv.id.toString(),
-      title: `${rdv.nomPatient} (${rdv.status})`,
-      start: `${rdv.date}T${rdv.heureDebut}`,
-      end: `${rdv.date}T${rdv.heureFin}`,
-      color: this.getStatusColor(rdv.status),
-      extendedProps: {
-        nomPatient: rdv.nomPatient,
-        status: rdv.status,
-        type: rdv.type || ''
-      }
-    }));
-  }
-
-  /** 🎨 Couleurs selon le statut du RDV */
-  private getStatusColor(status: string): string {
-    switch (status) {
-      case 'CONFIRME': return '#4CAF50'; // Vert
-      case 'EN_ATTENTE': return '#FF9800'; // Orange
-      case 'ANNULE': return '#F44336'; // Rouge
-      default: return '#2196F3'; // Bleu
-    }
-  }
-  /** 🖱️ Gestion du clic sur un événement */
-  private handleEventClick(info: EventClickArg): void {
-    const rdv: RendezVousResponse = info.event.extendedProps as RendezVousResponse;
-
+// Gérer la suppression après confirmation
+  onRequestDelete(rdvId: number): void {
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        title: 'Détails du rendez-vous',
-        message: `Patient: ${rdv.nomPatient}\nStatut: ${rdv.status}`,
-        confirmText: 'Confirmer',
+        title: 'Confirmation de suppression',
+        message: 'Voulez-vous vraiment supprimer ce rendez-vous ?',
+        confirmText: 'Oui, supprimer',
         cancelText: 'Annuler'
       }
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.confirmRdv(Number(info.event.id));
+      if (result === true) {
+        this.deleteRendezVous(rdvId);
       }
     });
   }
 
-  /** 🎨 Personnalisation de l'apparence des événements */
-  private handleEventMount(info: any): void {
-    const status: string = info.event.extendedProps.status?.toLowerCase();
-
-    // 🧠 Normalise les accents et majuscules pour correspondre au CSS
-    const normalizedStatus = status
-      .normalize("NFD") //   ✅ Convertit les caractères accentués
-      .replace(/[\u0300-\u036f]/g, "")  // ✅ Supprime les accents (é → e)
-      .replace(/\s+/g, "_");// ✅ Remplace les espaces (si "en attente" → en_attente)
-
-    const tooltip = document.createElement('div');
-    tooltip.className = 'event-tooltip';
-    tooltip.innerHTML = `
-      <strong>${info.event.title}</strong><br>
-      <small>${info.event.extendedProps.description}</small>
-    `;
-    info.el.appendChild(tooltip);
-    // ✅ Ajout de la classe CSS personnalisée
-    info.el.classList.add(`fc-status-${normalizedStatus}`);
-  }
-
-  /** ✅ Confirmer un rendez-vous */
-  confirmRdv(id: number): void {
-    this.rendezvousService.confirmRendezVous(id)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: () => {
-          this.notificationService.showSuccess('Rendez-vous confirmé avec succès');
-          this.fetchRendezVous();
-        },
-        error: (err) => {
-          this.notificationService.showError('Erreur lors de la confirmation du rendez-vous');
-          console.error(err);
-        }
-      });
-  }
-  /** ❌ Rejeter un rendez-vous */
-  rejectRdv(id: number): void {
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      data: {
-        title: 'Rejeter le rendez-vous',
-        message: 'Êtes-vous sûr de vouloir rejeter ce rendez-vous ?',
-        confirmText: 'Rejeter',
-        cancelText: 'Annuler'
-      }
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.rendezvousService.rejectRendezVous(id)
-          .pipe(takeUntil(this.destroy$))
-          .subscribe({
-            next: () => {
-              this.notificationService.showSuccess('Rendez-vous rejeté avec succès');
-              this.fetchRendezVous();
-            },
-            error: (err) => {
-              this.notificationService.showError('Erreur lors du rejet du rendez-vous');
-              console.error(err);
-            }
-          });
+  private deleteRendezVous(rdvId: number): void {
+    this.rendezvousService.deleteById(rdvId).subscribe({
+      next: () => {
+        this.refreshTrigger++;
+        this.showEditModal = false;
+        this.rdvToEdit = null;
+      },
+      error: err => {
+        console.error('Erreur lors de la suppression :', err);
+        alert("❌ Une erreur est survenue pendant la suppression.");
       }
     });
   }
-  /** 🗑️ Supprimer un RDV */
-  deleteRdv(id: number): void {
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      data: {
-        title: 'Supprimer le rendez-vous',
-        message: 'Êtes-vous sûr de vouloir supprimer ce rendez-vous ?',
-        confirmText: 'Supprimer',
-        cancelText: 'Annuler'
-      }
-    });
 
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.rendezvousService.deleteById(id)
-          .pipe(takeUntil(this.destroy$))
-          .subscribe({
-            next: () => {
-              this.rendezvousList = this.rendezvousList.filter(r => r.id !== id);
-              this.calendarOptions.events = this.mapToCalendarEvents(this.rendezvousList);
-              this.notificationService.showSuccess('Rendez-vous supprimé avec succès');
-            },
-            error: (err) => {
-              this.notificationService.showError('Erreur lors de la suppression du rendez-vous');
-              console.error(err);
-            }
-          });
-      }
-    });
-  }
+
 }
