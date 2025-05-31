@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
@@ -10,22 +10,47 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./navbar.component.css']
 })
 export class NavbarComponent implements OnInit {
-  userName: string = "khalil";
   menuOpen = false;
+  isScrolled = false;
 
-  toggleMenu() {
+  ngOnInit(): void {
+    // Initial scroll check
+    this.checkScroll();
+  }
+
+  @HostListener('window:scroll', [])
+  onWindowScroll(): void {
+    this.checkScroll();
+  }
+
+  private checkScroll(): void {
+    this.isScrolled = window.pageYOffset > 20;
+  }
+
+  toggleMenu(): void {
     this.menuOpen = !this.menuOpen;
   }
 
-  ngOnInit(): void {
-    const navbar = document.querySelector('.navbar-area');
+  closeMenu(): void {
+    this.menuOpen = false;
+  }
 
-    window.onscroll = () => {
-      if (window.scrollY >= 20) {
-        navbar?.classList.add('sticky');
-      } else {
-        navbar?.classList.remove('sticky');
-      }
-    };
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: Event): void {
+    const target = event.target as HTMLElement;
+    const navbar = target.closest('.navbar-area');
+
+    // Close menu if clicking outside navbar
+    if (!navbar && this.menuOpen) {
+      this.closeMenu();
+    }
+  }
+
+  @HostListener('window:resize', [])
+  onWindowResize(): void {
+    // Close mobile menu on desktop size
+    if (window.innerWidth >= 1024 && this.menuOpen) {
+      this.closeMenu();
+    }
   }
 }

@@ -1,69 +1,98 @@
-<footer class="bg-[#408d8e] text-white pt-20 pb-10 px-6 md:px-16">
-  <div class="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12">
+<footer class="footer-main text-white pt-20 pb-6 px-6 md:px-16">
+  <div class="footer-content max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
 
-    <!-- Brand & Signature -->
-    <div>
-      <h2 class="text-3xl font-semibold mb-4">
-        <a routerLink="/home">Anas </a>
+    <!-- Brand & Signature Section -->
+    <div class="footer-section">
+      <h2 class="footer-brand mb-4">
+        <a routerLink="/home">DentalCare</a>
       </h2>
-      <p class="text-sm leading-relaxed text-gray-100">
-        Votre sourire est notre priorité. Profitez d'une expertise dentaire de pointe dans un cadre chaleureux.
+      <p class="footer-description">
+        Votre sourire est notre priorité. Profitez d'une expertise dentaire de pointe
+        dans un cadre chaleureux et moderne, où chaque patient bénéficie d'un soin personnalisé.
       </p>
-      <img src="assets/images/signature.png" alt="Signature" class="mt-6 w-32" />
-      <div class="mt-6 flex items-center gap-4">
-        <img src="assets/images/footer-1.jpg" alt="Dr" class="w-14 h-14 rounded-lg object-cover shadow-md" />
-        <div>
-          <h4 class="text-white font-medium">Dr. Anas </h4>
-          <span class="text-sm text-gray-300">CEO & Founder</span>
+
+      <img src="assets/images/signature.png"
+           alt="Signature du Dr. Anas"
+           class="signature-image mt-6" />
+
+      <div class="doctor-profile">
+        <img src="assets/images/footer-1.jpg"
+             alt="Dr. Anas"
+             class="doctor-avatar" />
+        <div class="doctor-info">
+          <h4>Dr. Anas L9ray</h4>
+          <span>CEO & Fondateur</span>
         </div>
       </div>
     </div>
 
-    <!-- Useful Links -->
-    <div>
-      <h3 class="text-xl font-semibold mb-4">Liens utiles</h3>
-      <ul class="space-y-2 text-sm text-gray-200">
-        <li><a routerLink="/about" class="hover:text-cyan-300 transition">À propos</a></li>
-        <li><a routerLink="/services" class="hover:text-cyan-300 transition">Services dentaires</a></li>
-        <li><a routerLink="/dentict" class="hover:text-cyan-300 transition">Nos dentistes</a></li>
-        <li><a routerLink="/home" class="hover:text-cyan-300 transition">FAQs</a></li>
-        <li><a routerLink="/privacy" class="hover:text-cyan-300 transition">Politique de confidentialité</a></li>
-        <li><a routerLink="/services" class="hover:text-cyan-300 transition">Pédiatrie</a></li>
-        <li><a routerLink="/services" class="hover:text-cyan-300 transition">Santé de la femme</a></li>
+    <!-- Useful Links Section -->
+    <div class="footer-section">
+      <h3 class="footer-title">Navigation</h3>
+      <ul class="footer-links">
+        <li><a routerLink="/about">À propos de nous</a></li>
+        <li><a routerLink="/services">Services dentaires</a></li>
+        <li><a routerLink="/calendar">Prendre rendez-vous</a></li>
+        <li><a routerLink="/contact">Nous contacter</a></li>
+        <li><a routerLink="/privacy">Politique de confidentialité</a></li>
+        <li><a routerLink="/terms">Conditions d'utilisation</a></li>
+        <li><a routerLink="/faq">Questions fréquentes</a></li>
       </ul>
     </div>
 
-    <!-- Contact Info -->
-    <div>
-      <h3 class="text-xl font-semibold mb-4">Contact</h3>
-      <ul class="space-y-4 text-sm text-gray-200">
-        <li class="flex items-start gap-3">
-          <i class="bx bx-phone-call text-xl text-cyan-300"></i>
-          <div>
-            <span class="block font-semibold">Appelez-nous</span>
-            <a href="tel:+212600000000" class="hover:text-cyan-300">+212 6 00 00 00 00</a>
+    <!-- Contact Information Section -->
+    <div class="footer-section">
+      <h3 class="footer-title">Contactez-nous</h3>
+
+      <div class="contact-item">
+        <i class="contact-icon bx bx-phone-call"></i>
+        <div class="contact-details">
+          <div class="contact-label">Appelez-nous</div>
+          <a href="tel:+212600000000" class="contact-value">
+            +212 6 00 00 00 00
+          </a>
+        </div>
+      </div>
+
+      <div class="contact-item">
+        <i class="contact-icon bx bx-envelope"></i>
+        <div class="contact-details">
+          <div class="contact-label">Email</div>
+          <a href="mailto:anas&#64;dentalcare.ma" class="contact-value">
+            anas&#64;dentalcare.ma
+          </a>
+        </div>
+      </div>
+
+      <div class="contact-item">
+        <i class="contact-icon bx bx-time-five"></i>
+        <div class="contact-details">
+          <div class="contact-label">Heures d'ouverture</div>
+          <div class="contact-value">
+            Lun - Ven: 09:00 - 18:00<br>
+            Sam: 09:00 - 14:00
           </div>
-        </li>
-        <li class="flex items-start gap-3">
-          <i class="bx bx-time-five text-xl text-cyan-300"></i>
-          <div>
-            <span class="block font-semibold">Heures d'ouverture</span>
-            09:00 à 18:00
+        </div>
+      </div>
+
+      <div class="contact-item">
+        <i class="contact-icon bx bx-map"></i>
+        <div class="contact-details">
+          <div class="contact-label">Adresse</div>
+          <div class="contact-value">
+            153 Avenue Mohammed V<br>
+            Marrakech, Maroc
           </div>
-        </li>
-        <li class="flex items-start gap-3">
-          <i class="bx bx-map text-xl text-cyan-300"></i>
-          <div>
-            <span class="block font-semibold">Adresse</span>
-            153 Marrakech Doha
-          </div>
-        </li>
-      </ul>
+        </div>
+      </div>
     </div>
   </div>
-</footer>
 
-<!-- Copyright -->
-<div class="bg-[#3b7e80] border-t border-[#285d5e] text-center py-5 text-sm text-gray-300">
-  © 2025 <span class="text-cyan-300 font-semibold">LMKMLIN</span> — All Rights Reserved.
-</div>
+  <!-- Copyright Section -->
+  <div class="footer-bottom">
+    <p>
+      © 2025 <span class="highlight">DentalCare</span> — Tous droits réservés.
+      Conçu avec 💙 pour votre sourire.
+    </p>
+  </div>
+</footer>

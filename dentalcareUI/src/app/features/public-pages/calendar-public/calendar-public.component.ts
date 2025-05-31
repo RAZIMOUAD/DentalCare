@@ -1,5 +1,4 @@
-
-import { Component, OnInit, ViewChild, inject } from '@angular/core';
+import { Component, OnInit, ViewChild, inject, AfterViewInit, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -13,7 +12,7 @@ import { RendezvousService } from '../../../core/services/rendezvous.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { RendezVousResponse } from '../../dashboard/models/rendezvous-response.model';
 import { LucideIconsModule } from '@shared/modules/lucide-icons.module';
-import {Observable} from 'rxjs';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-calendar-public',
@@ -28,7 +27,7 @@ import {Observable} from 'rxjs';
   templateUrl: './calendar-public.component.html',
   styleUrls: ['./calendar-public.component.css']
 })
-export class CalendarPublicComponent implements OnInit {
+export class CalendarPublicComponent implements OnInit, AfterViewInit {
   private router = inject(Router);
   private rendezvousService = inject(RendezvousService);
   private authService = inject(AuthService);
@@ -37,64 +36,71 @@ export class CalendarPublicComponent implements OnInit {
 
   isAuthenticated = false;
   appointmentType = 'Tout afficher';
-  selectedMonth = ''; // format YYYY-MM
+  selectedMonth = '';
+  selectedPractitioner = '';
+
+  // Statistics
+  totalAppointments = 0;
+  availableSlots = 0;
+  bookedSlots = 0;
 
   calendarOptions: CalendarOptions = {
-    // ✅ Plugins nécessaires pour la vue mensuelle + interaction
     plugins: [dayGridPlugin, interactionPlugin],
-
-    // ✅ Vue initiale correcte
     initialView: 'dayGridMonth',
-
-    // 🟡 Optionnel, utile si tu veux forcer la vue avec des propriétés personnalisées
-    views: {
-      dayGridMonth: {
-        type: 'dayGridMonth'
-      }
-    },
-
-    // ✅ Langue
     locale: frLocale,
-
-    // ✅ Toolbar visible
     headerToolbar: {
       left: 'prev,next today',
       center: 'title',
-      right: ''
+      right: 'dayGridMonth,timeGridWeek'
     },
-
-    // ✅ Options de sélection
     selectable: true,
     editable: false,
     height: 'auto',
-    dayMaxEventRows: true,
+    dayMaxEventRows: 3,
     weekends: true,
-
-    // 🔁 Les événements sont ajoutés dynamiquement
     events: [],
-
-    // ✅ Apparence
-    eventColor: '#2563eb',
+    eventColor: '#3b82f6',
     eventDisplay: 'block',
-
-    // ✅ Clics sur les événements
     eventClick: this.onEventClick.bind(this),
     dateClick: this.onDateClick.bind(this),
+    datesSet: () => this.handleMonthChange(),
+    eventDidMount: (info) => {
+      // Add custom styling based on event type
+      const eventEl = info.el;
+      const eventData = info.event.extendedProps;
 
-    // ⚠️❗ POINT CRITIQUE : `datesSet` doit **être appelé sans paramètre** ici
-    datesSet: () => this.handleMonthChange() // ← CORRECTION ici
+      if (eventData['isAvailable']) {
+        eventEl.style.background = 'linear-gradient(135deg, #3b82f6, #1d4ed8)';
+        eventEl.style.borderColor = '#1d4ed8';
+      } else {
+        eventEl.style.background = 'linear-gradient(135deg, #6b7280, #4b5563)';
+        eventEl.style.borderColor = '#4b5563';
+      }
+
+      eventEl.style.borderRadius = '8px';
+      eventEl.style.border = 'none';
+      eventEl.style.fontSize = '0.875rem';
+      eventEl.style.fontWeight = '600';
+    }
   };
 
+  constructor(private el: ElementRef) {}
 
   ngOnInit(): void {
     this.isAuthenticated = this.authService.isLoggedIn();
     const today = new Date();
     this.selectedMonth = this.formatDateToMonthInput(today);
+    this.loadInitialData();
+  }
+
+  ngAfterViewInit(): void {
+    this.initScrollAnimations();
+    this.enhanceCalendarUX();
   }
 
   handleMonthChange(): void {
     const calendarApi = this.calendarComponent.getApi();
-    const currentDate = calendarApi.getDate(); // 🧠 Vrai mois visible (celui du titre)
+    const currentDate = calendarApi.getDate();
 
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth() + 1;
@@ -105,8 +111,6 @@ export class CalendarPublicComponent implements OnInit {
 
     this.loadDisponibilites(year, month);
   }
-
-
 
   onMonthInputChange(event: any): void {
     const value = event.target.value;
@@ -120,7 +124,16 @@ export class CalendarPublicComponent implements OnInit {
     const year = current.getFullYear();
     const month = current.getMonth() + 1;
     this.loadDisponibilites(year, month);
+
+    // Add filter animation
+    this.animateFilterChange();
   }
+
+  private loadInitialData(): void {
+    const current = new Date();
+    this.loadDisponibilites(current.getFullYear(), current.getMonth() + 1);
+  }
+
   private fetchRendezVousByMonth(year: number, month: number): Observable<RendezVousResponse[]> {
     return this.rendezvousService.getPublicByMonth(year, month);
   }
@@ -130,14 +143,23 @@ export class CalendarPublicComponent implements OnInit {
       next: (rdvs) => {
         const filtered = this.filterAppointmentsByType(rdvs);
         this.renderAppointmentsToCalendar(filtered);
+        this.updateStatistics(filtered);
       },
-      error: () => {
-        console.error('❌ Erreur lors du chargement des RDV.');
+      error: (err) => {
+        console.error('❌ Erreur lors du chargement des RDV.', err);
+        this.showErrorMessage('Impossible de charger le calendrier. Veuillez réessayer.');
       }
     });
   }
+
   private filterAppointmentsByType(rdvs: RendezVousResponse[]): RendezVousResponse[] {
-    return rdvs.filter(rdv => rdv.status === 'CONFIRME');
+    let filtered = rdvs.filter(rdv => rdv.status === 'CONFIRME');
+
+    if (this.appointmentType !== 'Tout afficher') {
+      filtered = filtered.filter(rdv => rdv.type === this.appointmentType);
+    }
+
+    return filtered;
   }
 
   private renderAppointmentsToCalendar(rdvs: RendezVousResponse[]): void {
@@ -146,7 +168,12 @@ export class CalendarPublicComponent implements OnInit {
       title: `${rdv.heureDebut.slice(0, 5)} ${rdv.type}`,
       start: `${rdv.date}T${rdv.heureDebut}`,
       end: `${rdv.date}T${rdv.heureFin}`,
-      color: '#2563eb' // couleur unique ici
+      color: this.getEventColor(rdv.type || ''),
+      extendedProps: {
+        isAvailable: false,
+        type: rdv.type,
+        practitioner: rdv.praticien
+      }
     }));
 
     const calendarApi = this.calendarComponent.getApi();
@@ -154,36 +181,54 @@ export class CalendarPublicComponent implements OnInit {
     events.forEach(e => calendarApi.addEvent(e));
   }
 
+  private getEventColor(type: string): string {
+    const colors: { [key: string]: string } = {
+      'CONSULTATION': '#3b82f6',
+      'DETARTRAGE': '#10b981',
+      'URGENCE': '#ef4444',
+      'ESTHETIQUE': '#8b5cf6'
+    };
+    return colors[type] || '#6b7280';
+  }
 
+  private updateStatistics(rdvs: RendezVousResponse[]): void {
+    this.totalAppointments = rdvs.length;
+    this.bookedSlots = rdvs.length;
+    // Calculate available slots (this would typically come from your backend)
+    this.availableSlots = Math.max(0, 100 - this.bookedSlots); // Example calculation
+  }
 
   onEventClick(info: any): void {
     const title = info.event.title;
     const date = info.event.startStr;
+    const type = info.event.extendedProps.type;
 
-    if (info.event.backgroundColor === '#9ca3af') {
-      alert(`⛔ Ce créneau est déjà réservé.\nDate : ${date}`);
-      return;
-    }
-
-    if (!this.isAuthenticated) {
-      alert('Veuillez vous connecter pour réserver ce créneau.');
-    } else {
-      alert(`📅 Vous avez sélectionné : ${title}\nDate : ${date}`);
-    }
+    this.showAppointmentDetails({
+      title,
+      date,
+      type,
+      isAvailable: info.event.extendedProps.isAvailable
+    });
   }
 
   onDateClick(info: any): void {
     if (!this.isAuthenticated) {
-      alert('Veuillez vous connecter pour réserver à cette date.');
+      this.showAuthPrompt();
       return;
     }
 
     const date = info.dateStr;
-    this.router.navigate(['/user/reserver'], { queryParams: { date } });
+    this.router.navigate(['/user-account/prendre-rdv'], {
+      queryParams: { date }
+    }).then(success => {
+      if (!success) {
+        console.warn('⚠️ La redirection a échoué.');
+      }
+    });
   }
 
   onStartReservation(): void {
-    this.router.navigate(['/user/reserver']).then(success => {
+    this.router.navigate(['/user-account/prendre-rdv']).then(success => {
       if (!success) {
         console.warn('⚠️ La redirection a échoué.');
       }
@@ -192,5 +237,117 @@ export class CalendarPublicComponent implements OnInit {
 
   private formatDateToMonthInput(date: Date): string {
     return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}`;
+  }
+
+  private initScrollAnimations(): void {
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('animate-in');
+        }
+      });
+    }, observerOptions);
+
+    const elements = this.el.nativeElement.querySelectorAll(
+      '.calendar-header, .filters-section, .calendar-container, .info-card'
+    );
+
+    elements.forEach((el: Element) => {
+      observer.observe(el);
+    });
+
+    this.addAnimationStyles();
+  }
+
+  private addAnimationStyles(): void {
+    const style = document.createElement('style');
+    style.textContent = `
+      .calendar-header, .filters-section, .calendar-container, .info-card {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .calendar-header.animate-in, .filters-section.animate-in,
+      .calendar-container.animate-in, .info-card.animate-in {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      .info-card:nth-child(1).animate-in { transition-delay: 0.1s; }
+      .info-card:nth-child(2).animate-in { transition-delay: 0.2s; }
+      .info-card:nth-child(3).animate-in { transition-delay: 0.3s; }
+    `;
+    document.head.appendChild(style);
+  }
+
+  private enhanceCalendarUX(): void {
+    // Add hover effects to calendar days
+    setTimeout(() => {
+      const calendarEl = this.el.nativeElement.querySelector('.fc');
+      if (calendarEl) {
+        calendarEl.addEventListener('mouseover', (e: any) => {
+          if (e.target.classList.contains('fc-daygrid-day')) {
+            e.target.style.backgroundColor = 'rgba(15, 118, 110, 0.05)';
+          }
+        });
+
+        calendarEl.addEventListener('mouseout', (e: any) => {
+          if (e.target.classList.contains('fc-daygrid-day')) {
+            e.target.style.backgroundColor = '';
+          }
+        });
+      }
+    }, 1000);
+  }
+
+  private animateFilterChange(): void {
+    const container = this.el.nativeElement.querySelector('.calendar-container');
+    if (container) {
+      container.style.transform = 'scale(0.95)';
+      container.style.opacity = '0.7';
+
+      setTimeout(() => {
+        container.style.transform = 'scale(1)';
+        container.style.opacity = '1';
+      }, 150);
+    }
+  }
+
+  private showAppointmentDetails(appointment: any): void {
+    const message = appointment.isAvailable
+      ? `✅ Créneau disponible le ${appointment.date}\nType: ${appointment.type}`
+      : `⛔ Ce créneau est déjà réservé.\nDate: ${appointment.date}\nType: ${appointment.type}`;
+
+    alert(message);
+  }
+
+  private showAuthPrompt(): void {
+    const shouldRedirect = confirm(
+      '🔐 Vous devez être connecté pour réserver un rendez-vous.\n\nSouhaitez-vous vous connecter maintenant ?'
+    );
+
+    if (shouldRedirect) {
+      this.router.navigate(['/login']);
+    }
+  }
+
+  private showErrorMessage(message: string): void {
+    // In a real app, you'd use a proper notification service
+    alert(`❌ ${message}`);
+  }
+
+  // Analytics and tracking methods
+  trackFilterChange(filterType: string, value: string): void {
+    console.log(`Filter changed: ${filterType} = ${value}`);
+    // Add analytics tracking here
+  }
+
+  trackCalendarInteraction(action: string, data?: any): void {
+    console.log(`Calendar interaction: ${action}`, data);
+    // Add analytics tracking here
   }
 }

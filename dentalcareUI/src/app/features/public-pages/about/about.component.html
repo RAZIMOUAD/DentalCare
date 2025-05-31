@@ -1,174 +1,140 @@
-<!-- Banner -->
-<section class="bg-cover bg-center py-20 text-white text-left px-6 md:px-16" style="background-image: url('assets/images/page-title1.jpg');">
-  <h2 class="text-4xl font-bold text-black mb-2">The ANAS L9RAY Short Story</h2>
-  <ul class="flex text-sm gap-2 text-gray-800">
-    <li><a routerLink="/home" class="hover:underline">Home</a></li>
-    <li>›</li>
-    <li>About Us</li>
-  </ul>
+<!-- Enhanced Page Banner -->
+<section class="page-banner py-24 text-white text-center">
+  <div class="page-banner-content max-w-4xl mx-auto px-6">
+    <h1 class="page-title">Notre Histoire</h1>
+    <nav class="breadcrumb justify-center">
+      <a routerLink="/home">Accueil</a>
+      <span class="breadcrumb-separator">›</span>
+      <span>À propos</span>
+    </nav>
+  </div>
 </section>
 
-<link
-  rel="stylesheet"
-  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-  integrity="sha512-Zj5WYzA3f9PpMK3As9GABW/nF7IdXjAE78TL6zONVLo+9+ZlfIX+kN3DRXdzMskNn+Yz5DkkLoDFacbY9Ll2zQ=="
-  crossorigin="anonymous"
-  referrerpolicy="no-referrer"
-/>
+<!-- Enhanced Story Section -->
+<section class="content-section py-24">
+  <div class="content-wrapper max-w-7xl mx-auto px-6">
+    <div class="grid md:grid-cols-2 gap-16 items-center">
+      <div>
+        <h2 class="section-title">
+          Une histoire construite sur<br />
+          la confiance et la technologie
+        </h2>
+        <p class="section-description">
+          Chez DentalCare, nous offrons un mélange unique de technologie avancée et
+          d'hospitalité marocaine chaleureuse. Chaque sourire compte pour nous, et
+          chaque patient reçoit une attention personnalisée dans un environnement raffiné.
+        </p>
+        <ul class="feature-list">
+          <li class="feature-item">
+            <span class="feature-icon">✓</span>
+            <span class="feature-text">Équipements dentaires de dernière génération</span>
+          </li>
+          <li class="feature-item">
+            <span class="feature-icon">✓</span>
+            <span class="feature-text">Une équipe de dentistes passionnés et certifiés</span>
+          </li>
+          <li class="feature-item">
+            <span class="feature-icon">✓</span>
+            <span class="feature-text">Soins humains, artistiques et professionnels</span>
+          </li>
+          <li class="feature-item">
+            <span class="feature-icon">✓</span>
+            <span class="feature-text">Environnement moderne et accueillant</span>
+          </li>
+        </ul>
+      </div>
+      <div class="image-container h-[500px]">
+        <img src="assets/images/clinic-1.jpg"
+             alt="Notre clinique moderne"
+             class="w-full h-full object-cover" />
+      </div>
+    </div>
+  </div>
+</section>
 
-<!-- Présentation -->
-<section class="py-20 px-6 md:px-16 bg-white">
-  <div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
-    <div>
-      <h2 class="text-3xl md:text-4xl font-bold text-cyan-900 mb-6">
-        A story built on<br />
-        trust and technology
+<!-- Enhanced Fun Facts Section -->
+<section class="facts-section py-24 text-white">
+  <div class="max-w-7xl mx-auto px-6 relative z-10">
+    <div class="text-center mb-16">
+      <h2 class="text-4xl font-bold mb-4">Nos Résultats en Chiffres</h2>
+      <p class="text-xl opacity-90">La confiance de nos patients se mesure</p>
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+      <div *ngFor="let fact of facts" class="fact-card">
+        <div class="fact-number">{{ fact.value }}</div>
+        <div class="fact-label">{{ fact.label }}</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Enhanced Testimonials Section -->
+<section class="content-section py-24">
+  <div class="content-wrapper max-w-7xl mx-auto px-6">
+    <div class="text-center mb-16">
+      <p class="text-teal-600 uppercase text-sm font-semibold tracking-wide mb-2">Témoignages</p>
+      <h2 class="section-title">Ce que disent nos patients</h2>
+    </div>
+
+    <div class="testimonials-grid">
+      <div class="testimonial-card">
+        <p class="testimonial-text">
+          "L'atmosphère est si calme et moderne. Le personnel était incroyablement
+          amical et les soins étaient excellents !"
+        </p>
+        <div class="testimonial-author">— Sofia R.</div>
+      </div>
+      <div class="testimonial-card">
+        <p class="testimonial-text">
+          "Je me suis sentie vraiment prise en charge dès mon arrivée. Tout était
+          propre, clair et professionnel."
+        </p>
+        <div class="testimonial-author">— Yassir M.</div>
+      </div>
+      <div class="testimonial-card">
+        <p class="testimonial-text">
+          "Une équipe attentive, des équipements modernes. J'ai enfin trouvé un
+          cabinet en qui j'ai confiance."
+        </p>
+        <div class="testimonial-author">— Amine K.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Enhanced Features Section -->
+<section class="content-section py-24 bg-gradient-to-br from-teal-50 to-white">
+  <div class="content-wrapper max-w-7xl mx-auto px-6">
+    <div class="text-center mb-16">
+      <p class="text-teal-600 uppercase text-sm font-semibold tracking-wide mb-2">Nos atouts</p>
+      <h2 class="section-title">
+        Une clinique d'excellence<br />
+        pour un sourire éclatant
       </h2>
-      <p class="text-gray-600 leading-relaxed mb-6">
-        At DentalCare, we offer a unique blend of advanced technology and warm Moroccan hospitality.
-        Every smile matters to us, and every patient receives customized attention in a refined environment.
-      </p>
-      <ul class="space-y-3 text-gray-700">
-        <li class="flex items-start gap-2"><span class="text-cyan-600 font-bold">✓</span> Latest generation dental equipment</li>
-        <li class="flex items-start gap-2"><span class="text-cyan-600 font-bold">✓</span> A team of passionate and certified dentists</li>
-        <li class="flex items-start gap-2"><span class="text-cyan-600 font-bold">✓</span> Human, artistic and professional care</li>
-      </ul>
     </div>
-    <div class="relative h-[400px] w-full rounded-xl overflow-hidden shadow-xl">
-      <img src="assets/images/clinic-1.jpg" class="w-full h-full object-cover rounded-xl" />
-    </div>
-  </div>
-</section>
 
-<!-- Fun Facts -->
-<section class="relative bg-[#1f9ea1] py-20 px-6 md:px-16 text-white overflow-hidden">
-  <!-- Artistic background blur circles -->
-  <div class="absolute -top-32 -left-32 w-[400px] h-[400px] bg-white opacity-10 rounded-full blur-3xl"></div>
-  <div class="absolute -bottom-32 -right-32 w-[300px] h-[300px] bg-white opacity-10 rounded-full blur-2xl"></div>
-
-  <!-- Grid facts -->
-  <div class="relative z-10 max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-10 text-center">
-    <div *ngFor="let fact of facts" class="relative group bg-white/10 rounded-xl p-6 transition transform hover:scale-105 shadow-md backdrop-blur-lg">
-      <!-- Background icon -->
-      <img [src]="fact.img"
-           alt="{{ fact.label }}"
-           class="absolute inset-0 w-24 h-24 mx-auto opacity-10 blur-sm group-hover:blur-none transition duration-300" />
-
-      <!-- Foreground content -->
-      <div class="relative z-10">
-        <h3 class="text-5xl font-bold">{{ fact.value }}</h3>
-        <p class="text-sm font-medium mt-2">{{ fact.label }}</p>
+    <div class="features-grid">
+      <div *ngFor="let feature of features" class="feature-card">
+        <div class="feature-icon-wrapper">
+          <i class="bx text-2xl text-teal-600" [ngClass]="getIconClass(feature.icon)"></i>
+        </div>
+        <h3 class="feature-title">{{ feature.title }}</h3>
       </div>
     </div>
   </div>
 </section>
 
-
-<!-- Testimonials -->
-<section class="py-20 px-6 md:px-16 bg-white">
-  <div class="text-center max-w-3xl mx-auto mb-12">
-    <p class="uppercase text-sm font-medium text-cyan-600">Testimonials</p>
-    <h2 class="text-3xl md:text-4xl font-bold text-gray-900">What Our Patients Say</h2>
-  </div>
-
-  <div class="grid gap-8 md:grid-cols-3">
-    <div class="bg-white shadow-lg rounded-xl p-6 border border-gray-100 text-sm text-gray-600">
-      “The atmosphere is so calm and modern. The staff were incredibly friendly and the care was excellent!”
-      <div class="mt-4 font-bold text-cyan-800">— Sofia R.</div>
-    </div>
-    <div class="bg-white shadow-lg rounded-xl p-6 border border-gray-100 text-sm text-gray-600">
-      “I felt truly taken care of from the moment I arrived. Everything was clean, clear, and professional.”
-      <div class="mt-4 font-bold text-cyan-800">— Yassir M.</div>
-    </div>
-    <div class="bg-white shadow-lg rounded-xl p-6 border border-gray-100 text-sm text-gray-600">
-      “Une équipe attentive, des équipements modernes. J’ai enfin trouvé un cabinet en qui j’ai confiance.”
-      <div class="mt-4 font-bold text-cyan-800">— Amine K.</div>
-    </div>
-  </div>
-</section>
-
-<!-- About Features Section -->
-<section class="py-20 px-6 md:px-16 bg-white relative z-10">
-  <!-- Titre -->
-  <div class="text-center max-w-3xl mx-auto mb-12">
-    <p class="uppercase text-sm font-medium text-cyan-600 tracking-wide">Nos atouts</p>
-    <h2 class="text-3xl md:text-4xl font-bold text-gray-900">
-      Une clinique d’excellence <br />
-      pour un sourire éclatant
-    </h2>
-  </div>
-
-  <!-- Liste des features -->
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-    <div
-      *ngFor="let f of features"
-      class="bg-white rounded-xl shadow-md p-6 text-center transition transform hover:-translate-y-1 hover:shadow-lg border-b-4 border-cyan-200"
-    >
-      <!-- Icône Heroicon -->
-      <div class="w-16 h-16 mx-auto mb-4 flex items-center justify-center bg-cyan-100 text-cyan-600 rounded-full">
-        <svg
-          *ngIf="f.icon === 'check-circle'"
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-8 w-8"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M9 12l2 2l4 -4m5 2a9 9 0 11-18 0a9 9 0 0118 0z" />
-        </svg>
-
-        <svg
-          *ngIf="f.icon === 'user-group'"
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-8 w-8"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M17 20h5v-2a4 4 0 00-5-4M9 20H4v-2a4 4 0 015-4m3-4a4 4 0 100-8 4 4 0 000 8z" />
-        </svg>
-
-        <svg
-          *ngIf="f.icon === 'sparkles'"
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-8 w-8"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M5 12h.01M12 5h.01M12 19h.01M19 12h.01M17.657 6.343l-1.414 1.414M6.343 17.657l-1.414-1.414M6.343 6.343l1.414 1.414M17.657 17.657l1.414-1.414" />
-        </svg>
-
-        <svg
-          *ngIf="f.icon === 'shield-check'"
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-8 w-8"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M9 12l2 2l4 -4m1 -5l-6 3l-6 -3v6a9 9 0 006 8.48A9 9 0 0020 13V7z" />
-        </svg>
-      </div>
-
-      <h3 class="font-semibold text-lg text-gray-800">{{ f.title }}</h3>
-    </div>
-  </div>
-</section>
-
-
-
-<!-- Call to Action -->
-<section class="py-20 px-6 bg-cyan-50">
-  <div class="max-w-3xl mx-auto text-center">
-    <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-6">Need an Appointment?</h2>
-    <p class="text-gray-600 mb-8">Contact our team today to schedule your visit and start your journey to a perfect smile.</p>
-    <a routerLink="/contact" class="inline-block bg-[#1f9ea1] text-white px-8 py-3 rounded-full hover:bg-[#147a7d] transition font-semibold shadow-lg">
-      Contact Us
+<!-- Enhanced CTA Section -->
+<section class="cta-section py-20 mx-6 md:mx-16 mb-16">
+  <div class="max-w-4xl mx-auto text-center px-6">
+    <h2 class="section-title mb-6">Besoin d'un rendez-vous ?</h2>
+    <p class="section-description mb-8">
+      Contactez notre équipe dès aujourd'hui pour planifier votre visite et
+      commencer votre parcours vers un sourire parfait.
+    </p>
+    <a routerLink="/contact" class="cta-button">
+      Nous contacter
     </a>
   </div>
 </section>
