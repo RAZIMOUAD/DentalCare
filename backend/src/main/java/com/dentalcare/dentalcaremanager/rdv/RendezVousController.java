@@ -37,7 +37,7 @@ public class RendezVousController {
     @GetMapping("/by-user")
     @PreAuthorize("hasAnyAuthority(T(com.dentalcare.dentalcaremanager.security.RoleNames).ADMIN, T(com.dentalcare.dentalcaremanager.security.RoleNames).USER)")
     public ResponseEntity<List<RendezVousResponse>> getByUserId() {
-        // Récupérer user connecté automatiquement
+        // Récupérer un user connecté automatiquement
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         Integer userId = rendezVousService.getUserIdByEmail(email);
         return ResponseEntity.ok(rendezVousService.getByUserId(userId));
@@ -100,6 +100,7 @@ public class RendezVousController {
     public ResponseEntity<RendezVousResponse> getById(@PathVariable Integer id) {
         return ResponseEntity.ok(rendezVousService.getById(id)); // ✅ Méthode à créer
     }
+
 
 //Suppression par l’admin
 @DeleteMapping("/{id}")

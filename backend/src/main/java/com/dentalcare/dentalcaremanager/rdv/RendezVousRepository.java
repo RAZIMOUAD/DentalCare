@@ -55,6 +55,7 @@ WHERE r.status = :status
     SELECT CASE WHEN COUNT(r) > 0 THEN true ELSE false END
     FROM RendezVous r
     WHERE r.date = :date
+      AND r.status <> com.dentalcare.dentalcaremanager.rdv.StatusRdv.ANNULE
       AND r.heureDebut < :heureFin
       AND r.heureFin > :heureDebut
 """)
@@ -64,6 +65,7 @@ WHERE r.status = :status
             @Param("heureFin") LocalTime heureFin
     );
 
+
     @Query("""
     SELECT r FROM RendezVous r
     WHERE LOWER(r.patient.firstname) LIKE LOWER(CONCAT('%', :query, '%'))
@@ -71,5 +73,26 @@ WHERE r.status = :status
        OR LOWER(r.patient.email) LIKE LOWER(CONCAT('%', :query, '%'))
 """)
     List<RendezVous> searchByNomOrEmail(@Param("query") String query);
+
+
+    @Query("""
+    SELECT CASE WHEN COUNT(r) > 0 THEN true ELSE false END
+    FROM RendezVous r
+    WHERE r.id <> :id
+      AND r.date = :date
+      AND r.heureDebut < :heureFin
+      AND r.heureFin > :heureDebut
+      AND r.status = :status
+""")
+    boolean existsConflictExcludingId(
+            @Param("id") Integer id,
+            @Param("date") LocalDate date,
+            @Param("heureDebut") LocalTime heureDebut,
+            @Param("heureFin") LocalTime heureFin,
+            @Param("status") StatusRdv status
+    );
+    List<RendezVous> findByDateOrderByHeureDebutAsc(LocalDate date);
+    @Query("SELECT COUNT(r) FROM RendezVous r WHERE r.date = :date")
+    long countByDate(@Param("date") LocalDate date);
 
 }

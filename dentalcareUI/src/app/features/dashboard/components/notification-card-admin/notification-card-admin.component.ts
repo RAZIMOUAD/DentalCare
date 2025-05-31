@@ -1,18 +1,29 @@
 import { Component, Input } from '@angular/core';
 import { Notification } from '@shared/models/notification.model';
-import {LucideIconsModule} from '@shared/modules/lucide-icons.module'; // Chemin à adapter si besoin
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { CommonModule } from '@angular/common';
+import { LucideIconsModule } from '@shared/modules/lucide-icons.module';
+
 @Component({
   selector: 'app-notification-card-admin',
   standalone: true,
-  imports: [LucideIconsModule, CommonModule],
+  imports: [CommonModule, LucideIconsModule],
   templateUrl: './notification-card-admin.component.html',
   styleUrls: ['./notification-card-admin.component.css'],
 })
 export class NotificationCardAdminComponent {
   @Input() notification!: Notification;
 
-  // Retourne la classe Tailwind CSS selon le statut
+  constructor(private snackBar: MatSnackBar) {}
+
+  showFullMessage(): void {
+    this.snackBar.open(this.notification.message, 'Fermer', {
+      duration: 7000,
+      panelClass: 'snackbar-custom',
+      verticalPosition: 'bottom',
+    });
+  }
+
   getStatusClasses(): string {
     switch (this.notification.status) {
       case 'SUCCESS':
@@ -24,7 +35,6 @@ export class NotificationCardAdminComponent {
     }
   }
 
-  // Retourne la couleur du badge selon le type de notification
   getTypeBadgeClasses(): string {
     switch (this.notification.type) {
       case 'NEW_APPOINTMENT':
@@ -36,7 +46,6 @@ export class NotificationCardAdminComponent {
     }
   }
 
-  // Retourne l'icône à utiliser pour le statut
   getStatusIcon(): string {
     switch (this.notification.status) {
       case 'SUCCESS':
@@ -48,9 +57,19 @@ export class NotificationCardAdminComponent {
     }
   }
 
-  // Format simplifié Date/Heure sans moment.js
+  formatType(type: string): string {
+    switch (type) {
+      case 'NEW_APPOINTMENT': return 'Nouveau RDV';
+      case 'REMINDER': return 'Rappel';
+      default: return type;
+    }
+  }
+
   formatDateTime(datetime: string): string {
     const date = new Date(datetime);
-    return date.toLocaleDateString('fr-FR') + ' à ' + date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+    return date.toLocaleDateString('fr-FR') + ' à ' + date.toLocaleTimeString('fr-FR', {
+      hour: '2-digit',
+      minute: '2-digit'
+    });
   }
 }

@@ -223,25 +223,50 @@ public void rejectRendezVous(Integer id) {
                 .collect(Collectors.toList());
     }
     @Override
+    @Transactional
     public RendezVousResponse update(Integer id, RendezVousRequest request) {
+
+        // 🔍 1. Charger le rendez-vous existant
         RendezVous rendezVous = rendezVousRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Rendez-vous introuvable avec ID: " + id));
 
-        // 🔐 Optionnel : contrôle des droits ici (admin ou owner)
+        // 🔐 2. (Optionnel) Contrôle d’accès → à activer si besoin
+        // Vérifier si l'utilisateur courant est autorisé à modifier ce RDV (Admin ou le patient lui-même)
 
-        // ✅ Mise à jour des champs
+        // ⚠️ 3. Vérification de conflits si demande de confirmation
+        if (request.getStatus() == StatusRdv.CONFIRME) {
+            boolean conflict = rendezVousRepository.existsConflictExcludingId(
+                    id,
+                    request.getDate(),
+                    request.getHeureDebut(),
+                    request.getHeureFin(),
+                    StatusRdv.CONFIRME
+            );
+
+            if (conflict) {
+                throw new SlotConflictException("⛔ Ce créneau est déjà occupé par un autre rendez-vous confirmé.");
+            }
+        }
+
+        // ✅ 4. Mise à jour des champs
         rendezVous.setDate(request.getDate());
         rendezVous.setHeureDebut(request.getHeureDebut());
         rendezVous.setHeureFin(request.getHeureFin());
         rendezVous.setType(request.getType());
         rendezVous.setMotif(request.getMotif());
+        rendezVous.setStatus(request.getStatus());
 
-        // 🔁 Mise à jour versionnée (optimistic locking si activé)
-        rendezVous = rendezVousRepository.save(rendezVous);
+        // 💾 5. Sauvegarde avec persistance JPA
+        RendezVous updated = rendezVousRepository.save(rendezVous);
 
-        return RendezVousResponse.fromEntity(rendezVous);
-        // ou convertisseur vers DTO
+        // 🎯 6. Conversion vers DTO
+        return RendezVousResponse.fromEntity(updated);
     }
+    public List<RendezVousResponse> getAppointmentsForDay(LocalDate date) {
+        List<RendezVous> rdvs = rendezVousRepository.findByDateOrderByHeureDebutAsc(date);
+        return rdvs.stream().map(RendezVousResponse::fromEntity).limit(5).toList();
+    }
+
     @Override
     public List<RendezVous> searchByNomOrEmail(String query) {
         System.out.println("🔍 Recherche backend : " + query);

@@ -1,33 +1,80 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CardStatsComponent } from '../../components/widgets/card-stats/card-stats.component';
+import { LucideIconsModule } from '@shared/modules/lucide-icons.module';
+import { RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../../environments/environment';
+import { RendezvousService } from '../../../../core/services/rendezvous.service';
+import { NotificationService } from '../../../../core/services/notification.service';
+import { Notification } from '@shared/models/notification.model';
+import { RendezVousResponse } from '../../models/rendezvous-response.model';
 
 @Component({
   selector: 'app-accueil',
-  imports: [CommonModule, CardStatsComponent],
   standalone: true,
+  imports: [
+    CommonModule,
+    CardStatsComponent,
+    LucideIconsModule,
+    RouterModule
+  ],
   templateUrl: './accueil.component.html',
-  styleUrl: './accueil.component.css'
+  styleUrls: ['./accueil.component.css']
 })
-export class AccueilComponent implements OnInit{
-  stats: {
-    totalPatients: number;
-    appointmentsToday: number;
-    totalRevenue: number;
-  } | null = null;
+export class AccueilComponent implements OnInit {
+  stats = {
+    totalPatients: 0,
+    appointmentsToday: 0,
+    totalRevenue: 0
+  };
 
-  constructor(private http: HttpClient) {}
+  appointmentsToday: RendezVousResponse[] = [];
+  notifications: Notification[] = [];
+
+  private http = inject(HttpClient);
+
+  constructor(
+    private notificationService: NotificationService,
+    private rendezvousService: RendezvousService
+  ) {}
 
   ngOnInit(): void {
-    this.http.get(`${environment.apiUrl}/dashboard/stats`).subscribe({
-      next: (res: any) => {
-        this.stats = res;
-      },
-      error: (err) => {
-        console.error('Erreur chargement stats dashboard', err);
-      }
+    this.loadStatsFromApi();
+    this.loadTodayAppointments();
+    this.loadRecentNotifications();
+  }
+
+  private loadStatsFromApi(): void {
+    this.http.get<{ totalPatients: number; appointmentsToday: number; totalRevenue: number }>(
+      `${environment.apiUrl}/dashboard/stats`
+    ).subscribe({
+      next: (res) => this.stats = res,
+      error: (err: any) => console.error('Erreur chargement stats dashboard', err)
+    });
+  }
+
+  private loadTodayAppointments(): void {
+    this.http.get<RendezVousResponse[]>(`${environment.apiUrl}/dashboard/today`)
+      .subscribe({
+        next: (rdvs) => this.appointmentsToday = rdvs.slice(0, 5),
+        error: (err: any) => console.error('Erreur chargement RDV du jour', err)
+      });
+  }
+
+  private loadRecentNotifications(): void {
+    this.notificationService.getAllNotifications().subscribe(notifs => {
+      this.notifications = notifs
+        .sort((a, b) => new Date(b.attemptedAt).getTime() - new Date(a.attemptedAt).getTime())
+        .slice(0, 5);
+    });
+  }
+
+  formatDate(datetime: string): string {
+    const date = new Date(datetime);
+    return date.toLocaleDateString('fr-FR') + ' à ' + date.toLocaleTimeString('fr-FR', {
+      hour: '2-digit',
+      minute: '2-digit'
     });
   }
 }

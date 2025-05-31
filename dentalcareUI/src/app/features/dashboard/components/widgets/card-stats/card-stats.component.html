@@ -1,23 +1,41 @@
 <div
-  class="w-full rounded-xl shadow-md p-4 flex items-center gap-4 bg-white hover:shadow-lg transition-all duration-300 group cursor-pointer"
+  class="w-full rounded-2xl shadow-sm p-4 flex items-center gap-4 bg-white hover:shadow-md transition-all duration-300 group"
 >
 
-  <!-- Badge / Icône -->
+  <!-- Icône -->
   <div
-    class="w-12 h-12 flex items-center justify-center rounded-lg text-xl font-semibold"
+    class="w-12 h-12 flex items-center justify-center rounded-lg text-xl"
     [ngClass]="color"
   >
-    {{ icon }}
+    <lucide-icon [name]="icon" class="w-6 h-6"></lucide-icon>
   </div>
 
-  <!-- Contenu principal -->
-  <div class="flex flex-col justify-center">
+  <!-- Contenu -->
+  <div class="flex flex-col flex-1">
     <span class="text-sm text-gray-500 font-medium">
       {{ title }}
     </span>
-    <span class="text-xl font-semibold text-gray-800 group-hover:text-blue-600 transition">
-      {{ value }}
-    </span>
-  </div>
 
+    <div class="flex items-center gap-2">
+      <span class="text-xl font-bold text-gray-800 group-hover:text-blue-600 transition">
+        {{ value }}
+      </span>
+
+      <!-- Variation optionnelle -->
+      <div
+        *ngIf="variation && variationType"
+        class="flex items-center text-xs font-medium"
+        [ngClass]="{
+          'text-green-600': variationType === 'up',
+          'text-red-600': variationType === 'down'
+        }"
+      >
+        <lucide-icon
+          [name]="variationType === 'up' ? 'arrow-up-right' : 'arrow-down-right'"
+          class="w-4 h-4"
+        />
+        {{ variation }}
+      </div>
+    </div>
+  </div>
 </div>

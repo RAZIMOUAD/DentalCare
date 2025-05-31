@@ -1,7 +1,9 @@
 <div class="flex flex-col gap-8">
 
-  <!-- Barre de recherche et filtres -->
-  <div class="flex flex-col md:flex-row md:items-end gap-4 bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+  <!-- Barre de recherche, filtres et tri -->
+  <div class="flex flex-col md:flex-row md:items-end flex-wrap gap-4 bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+
+    <!-- Recherche -->
     <div class="flex flex-col w-full md:w-1/3">
       <label class="text-sm text-gray-600 mb-1">🔍 Rechercher</label>
       <input
@@ -13,6 +15,7 @@
       />
     </div>
 
+    <!-- Statut -->
     <div class="flex flex-col w-full md:w-1/4">
       <label class="text-sm text-gray-600 mb-1">🎯 Statut</label>
       <select
@@ -26,6 +29,7 @@
       </select>
     </div>
 
+    <!-- Type -->
     <div class="flex flex-col w-full md:w-1/4">
       <label class="text-sm text-gray-600 mb-1">📦 Type</label>
       <select
@@ -39,13 +43,32 @@
       </select>
     </div>
 
+    <!-- Tri -->
+    <div class="flex flex-col w-full md:w-1/4">
+      <label class="text-sm text-gray-600 mb-1">⏱️ Tri</label>
+      <select
+        [(ngModel)]="sortOrder"
+        (change)="applyFilters()"
+        class="p-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      >
+        <option value="desc">Plus récents d’abord</option>
+        <option value="asc">Plus anciens d’abord</option>
+      </select>
+    </div>
+
+    <!-- Réinitialiser -->
     <button
       (click)="resetFilters()"
-      class="h-10 px-4 mt-5 md:mt-0 text-sm bg-gray-100 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-200 transition"
+      class="h-10 px-4 text-sm bg-gray-100 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-200 transition self-start md:mt-6"
     >
       Réinitialiser
     </button>
   </div>
+
+  <!-- Nombre de résultats -->
+  <p class="text-sm text-gray-500 italic px-2">
+    📬 {{ filteredNotifications.length }} notification(s) trouvée(s)
+  </p>
 
   <!-- Liste des notifications -->
   <div *ngIf="!isLoading && paginatedNotifications.length > 0" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">

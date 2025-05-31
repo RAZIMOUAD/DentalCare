@@ -8,8 +8,7 @@ import {LucideIconsModule} from '@shared/modules/lucide-icons.module';
   selector: 'app-calendar-modal-edit',
   standalone: true,
   imports: [CommonModule, FormsModule, LucideIconsModule],
-  templateUrl: './calendar-modal-edit.component.html',
-  styleUrls: ['./calendar-modal-edit.component.css']
+  templateUrl: './calendar-modal-edit.component.html'
 })
 export class CalendarModalEditComponent implements OnInit {
   @Input() rendezVousToEdit!: RendezVousAdminResponse;
@@ -20,7 +19,9 @@ export class CalendarModalEditComponent implements OnInit {
     heureFin: string;
     motif: string;
     type: 'CONSULTATION' | 'SUIVI' | 'DETARTRAGE' | 'AUTRE';
+    status: 'EN_ATTENTE' | 'CONFIRME' | 'ANNULE';
   }>();
+
 
   @Output() closeModal = new EventEmitter<void>();
 
@@ -30,6 +31,7 @@ export class CalendarModalEditComponent implements OnInit {
   heureFin = '';
   motif = '';
   type: 'CONSULTATION' | 'SUIVI' | 'DETARTRAGE' | 'AUTRE' = 'CONSULTATION';
+  status: 'EN_ATTENTE' | 'CONFIRME' | 'ANNULE' = 'EN_ATTENTE';
 
   ngOnInit(): void {
     if (this.rendezVousToEdit) {
@@ -38,6 +40,8 @@ export class CalendarModalEditComponent implements OnInit {
       this.heureFin = this.rendezVousToEdit.heureFin;
       this.motif = this.rendezVousToEdit.motif;
       this.type = this.rendezVousToEdit.type as any;
+      this.status = this.rendezVousToEdit.status as any;
+
     }
   }
 
@@ -47,7 +51,8 @@ export class CalendarModalEditComponent implements OnInit {
       heureDebut: this.heureDebut,
       heureFin: this.heureFin,
       motif: this.motif,
-      type: this.type
+      type: this.type,
+      status: this.status
     });
   }
 

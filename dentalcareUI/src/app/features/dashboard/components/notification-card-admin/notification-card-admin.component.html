@@ -1,32 +1,34 @@
-<div class="flex flex-col p-4 bg-white rounded-2xl shadow-sm border border-gray-200 hover:shadow-md transition-all duration-300">
+<div
+  class="flex flex-col p-4 bg-white rounded-2xl shadow-sm border border-gray-200 hover:shadow-md transition-all duration-300 cursor-pointer"
+  (click)="showFullMessage()"
+  [ngClass]="{ 'ring-2 ring-green-400': notification.justReceived }"
+>
 
-  <!-- Statut avec Icône -->
-  <div class="flex items-center gap-2 mb-3">
-    <lucide-icon [name]="getStatusIcon()" class="w-6 h-6" [ngClass]="getStatusClasses()"></lucide-icon>
-    <span class="font-semibold text-gray-700">{{ notification.email }}</span>
+  <!-- Ligne supérieure : statut + email -->
+  <div class="flex items-center justify-between mb-3">
+    <div class="flex items-center gap-2">
+      <lucide-icon [name]="getStatusIcon()" class="w-6 h-6" [ngClass]="getStatusClasses()"></lucide-icon>
+      <span class="font-semibold text-gray-700">{{ notification.email }}</span>
+    </div>
+    <span class="text-xs text-gray-400">{{ formatDateTime(notification.attemptedAt) }}</span>
   </div>
 
   <!-- Type de notification -->
   <div class="mb-2">
     <span class="px-2 py-1 text-xs rounded-full font-medium" [ngClass]="getTypeBadgeClasses()">
-      {{ notification.type }}
+      {{ formatType(notification.type) }}
     </span>
   </div>
 
-  <!-- Date et Heure -->
-  <div class="text-sm text-gray-500 mb-2">
-    {{ formatDateTime(notification.attemptedAt) }}
+  <!-- Message (tronqué, mais tout visible au survol) -->
+  <div class="text-sm text-gray-600 line-clamp-2 hover:line-clamp-none transition-all" [title]="notification.message">
+    📝 {{ notification.message }}
   </div>
 
-  <!-- Message résumé -->
-  <div class="text-sm text-gray-600 truncate" [title]="notification.message">
-    {{ notification.message }}
-  </div>
-
-  <!-- Statut final (Success/Failure) Badge -->
+  <!-- Badge statut -->
   <div class="mt-4 self-end">
     <span class="px-3 py-1 text-xs rounded-full font-semibold" [ngClass]="getStatusClasses()">
-      {{ notification.status }}
+      {{ notification.status === 'SUCCESS' ? 'Succès' : 'Échec' }}
     </span>
   </div>
 </div>

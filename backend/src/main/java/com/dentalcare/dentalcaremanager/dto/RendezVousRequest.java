@@ -41,13 +41,16 @@ public class RendezVousRequest {
 
     private String motif;        // ex: "Urgence", "Contrôle", etc.
 
+    @Enumerated(EnumType.STRING)
+    private StatusRdv status; // Facultatif, mais utilisé en modification
+
 
     public RendezVous toEntity(User patient) {
         return RendezVous.builder()
                 .date(this.date)
                 .heureDebut(this.heureDebut)
                 .heureFin(this.heureFin)
-                .status(StatusRdv.EN_ATTENTE)
+                .status(this.status != null ? this.status : StatusRdv.EN_ATTENTE)
                 .archive(false)
                 .motif(this.motif)
                 .type(this.type != null ? this.type : TypeRdv.CONSULTATION)

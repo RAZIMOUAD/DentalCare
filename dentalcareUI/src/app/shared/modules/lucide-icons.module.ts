@@ -3,7 +3,7 @@ import { LucideAngularModule } from 'lucide-angular';
 import { icons} from 'lucide';
 
 const selectedIcons = {
-  // Icônes de base
+  // Icônes de basea
   Calendar: icons.Calendar,
   CalendarDays: icons.CalendarDays,
   ChevronRight: icons.ChevronRight,
@@ -14,6 +14,7 @@ const selectedIcons = {
   DollarSign: icons.DollarSign,
   AlertTriangle: icons.AlertTriangle,
   Clock: icons.Clock,
+  ArrowUpRight: icons.ArrowUpRight,
 
   // Icônes pour le thème
   Sun: icons.Sun,

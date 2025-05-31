@@ -7,11 +7,13 @@ import { FormsModule } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { WebSocketService } from '../../../../core/services/websocket.service';
 import { Subscription } from 'rxjs';
+import { MatDialog } from '@angular/material/dialog';
+import { MatDialogModule } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-notifications-admin-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, NotificationCardAdminComponent],
+  imports: [CommonModule, FormsModule, NotificationCardAdminComponent, MatDialogModule],
   templateUrl: './notifications-admin-page.component.html',
   styleUrls: ['./notifications-admin-page.component.css']
 })
@@ -23,6 +25,7 @@ export class NotificationsAdminPageComponent implements OnInit, OnDestroy {
   searchTerm: string = '';
   selectedStatus: 'SUCCESS' | 'FAILURE' | '' = '';
   selectedType: 'NEW_APPOINTMENT' | 'REMINDER' | '' = '';
+  sortOrder: 'asc' | 'desc' = 'desc';
 
   currentPage: number = 1;
   pageSize: number = 6;
@@ -32,7 +35,8 @@ export class NotificationsAdminPageComponent implements OnInit, OnDestroy {
   constructor(
     private notificationService: NotificationService,
     private snackBar: MatSnackBar,
-    private webSocketService: WebSocketService
+    private webSocketService: WebSocketService,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -81,20 +85,27 @@ export class NotificationsAdminPageComponent implements OnInit, OnDestroy {
   }
 
   applyFilters(): void {
-    this.filteredNotifications = this.notifications.filter((notif) => {
-      const matchesSearch =
-        this.searchTerm.trim() === '' ||
-        notif.email.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-        notif.type.toLowerCase().includes(this.searchTerm.toLowerCase());
+    this.filteredNotifications = this.notifications
+      .filter((notif) => {
+        const matchesSearch =
+          this.searchTerm.trim() === '' ||
+          notif.email.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+          notif.type.toLowerCase().includes(this.searchTerm.toLowerCase());
 
-      const matchesStatus = this.selectedStatus === '' || notif.status === this.selectedStatus;
-      const matchesType = this.selectedType === '' || notif.type === this.selectedType;
+        const matchesStatus = this.selectedStatus === '' || notif.status === this.selectedStatus;
+        const matchesType = this.selectedType === '' || notif.type === this.selectedType;
 
-      return matchesSearch && matchesStatus && matchesType;
-    });
+        return matchesSearch && matchesStatus && matchesType;
+      })
+      .sort((a, b) => {
+        const dateA = new Date(a.attemptedAt).getTime();
+        const dateB = new Date(b.attemptedAt).getTime();
+        return this.sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
+      });
 
     this.currentPage = 1;
   }
+
 
   resetFilters(): void {
     this.searchTerm = '';
@@ -124,5 +135,14 @@ export class NotificationsAdminPageComponent implements OnInit, OnDestroy {
 
   private castType(t: string): 'NEW_APPOINTMENT' | 'REMINDER' {
     return t === 'NEW_APPOINTMENT' || t === 'REMINDER' ? t : 'NEW_APPOINTMENT';
+  }
+
+  showNotificationDetail(notification: Notification): void {
+    this.snackBar.open(notification.message, 'Fermer', {
+      duration: 7000,
+      panelClass: ['snackbar-info'],
+      horizontalPosition: 'center',
+      verticalPosition: 'top'
+    });
   }
 }

@@ -90,6 +90,7 @@ export class RendezvousComponent {
     heureFin: string;
     motif: string;
     type: 'CONSULTATION' | 'SUIVI' | 'DETARTRAGE' | 'AUTRE';
+    status: 'EN_ATTENTE' | 'CONFIRME' | 'ANNULE';
   }): void {
     if (!this.rdvToEdit) return;
 
@@ -98,7 +99,8 @@ export class RendezvousComponent {
       heureDebut: data.heureDebut,
       heureFin: data.heureFin,
       motif: data.motif,
-      type: data.type as TypeRdv
+      type: data.type as TypeRdv,
+      status: data.status
     }).subscribe({
       next: () => {
         this.refreshTrigger++;

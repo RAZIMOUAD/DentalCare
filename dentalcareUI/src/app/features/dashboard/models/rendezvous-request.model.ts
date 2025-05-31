@@ -4,4 +4,5 @@ export interface RendezVousRequest {
   heureFin: string;     // 'HH:mm'
   type: 'CONSULTATION' | 'SUIVI' | 'DETARTRAGE' | 'AUTRE';
   motif?: string;
+  status?: 'EN_ATTENTE' | 'CONFIRME' | 'ANNULE';
 }

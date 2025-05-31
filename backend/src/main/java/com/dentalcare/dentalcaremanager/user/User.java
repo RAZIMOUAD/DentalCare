@@ -3,6 +3,7 @@ package com.dentalcare.dentalcaremanager.user;
 
 import com.dentalcare.dentalcaremanager.rdv.RendezVous;
 import com.dentalcare.dentalcaremanager.role.Role;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -112,8 +113,7 @@ public class User implements UserDetails, Principal {
         return roles.stream().anyMatch(r -> r.getName().equals(roleName));
     }
     @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, orphanRemoval = true)
-    @ToString.Exclude
-    @EqualsAndHashCode.Exclude
+    @JsonManagedReference
     private List<RendezVous> rendezVousList = new ArrayList<>();
 
 }

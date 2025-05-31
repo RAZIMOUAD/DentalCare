@@ -1,6 +1,7 @@
 package com.dentalcare.dentalcaremanager.rdv;
 
 import com.dentalcare.dentalcaremanager.user.User;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -32,7 +33,9 @@ public class RendezVous {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @JsonBackReference
     private User patient;
+
 
     @Column(length = 512)
     private String motif;

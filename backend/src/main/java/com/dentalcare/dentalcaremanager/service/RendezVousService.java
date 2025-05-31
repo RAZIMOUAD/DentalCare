@@ -34,5 +34,7 @@ public interface RendezVousService {
     List<RendezVous> searchByDate(LocalDate date);
 
 
+   List<RendezVousResponse> getAppointmentsForDay(LocalDate date) ;
+
 
 }

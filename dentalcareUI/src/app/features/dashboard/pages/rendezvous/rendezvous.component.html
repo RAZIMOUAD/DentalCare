@@ -71,4 +71,8 @@
   (requestDelete)="onRequestDelete($event)"
 ></app-calendar-modal-edit>
 <!-- ✅ Modale de confirmation suppression -->
+<!-- HACK pour forcer Angular à reconnaître le composant -->
+<ng-template>
+  <app-confirmation-dialog></app-confirmation-dialog>
+</ng-template>
 
