@@ -96,5 +96,15 @@ public class PatientController {
     public ResponseEntity<List<PatientResponse>> getPatientsWithUserAccount() {
         return ResponseEntity.ok(patientRestService.getPatientsWithUserAccount());
     }
+    @GetMapping("/email")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
+    public ResponseEntity<PatientResponse> getByEmail(@RequestParam String email) {
+        return ResponseEntity.ok(patientRestService.getPatientByEmail(email));
+    }
+    @GetMapping("/me")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
+    public ResponseEntity<PatientResponse> getCurrentPatient() {
+        return ResponseEntity.ok(patientRestService.getCurrentPatient());
+    }
 
 }

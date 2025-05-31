@@ -1,0 +1,29 @@
+<div class="p-6 max-w-3xl mx-auto text-gray-800">
+  <!-- Titre -->
+  <h2 class="text-2xl font-bold text-blue-700 mb-4">
+    Bonjour {{ patient?.prenom?.toLowerCase() }} 👋
+  </h2>
+  <p class="mb-6">Voici vos prochains rendez-vous <strong class="text-blue-600">confirmés</strong> :</p>
+
+  <!-- Spinner de chargement -->
+  <div *ngIf="isLoading" class="flex items-center gap-3 text-blue-600">
+    <lucide-icon name="loader-circle" class="animate-spin w-5 h-5"></lucide-icon>
+    <span>Chargement en cours...</span>
+  </div>
+
+  <!-- Aucun rendez-vous -->
+  <div *ngIf="!isLoading && confirmedRDVs.length === 0" class="text-gray-500 italic">
+    Vous n'avez pas de rendez-vous confirmés à venir.
+  </div>
+
+  <!-- Liste des rendez-vous confirmés -->
+  <div *ngIf="!isLoading && confirmedRDVs.length > 0" class="space-y-4">
+    <div *ngFor="let rdv of confirmedRDVs" class="bg-white shadow p-4 rounded-lg border border-gray-200">
+      <div class="text-blue-600 font-semibold mb-1">
+        📅 {{ rdv.date }} à {{ rdv.heureDebut }}
+      </div>
+      <div><strong>Motif :</strong> {{ rdv.motif }}</div>
+      <div class="text-sm text-gray-500"><strong>Type :</strong> {{ rdv.type }}</div>
+    </div>
+  </div>
+</div>

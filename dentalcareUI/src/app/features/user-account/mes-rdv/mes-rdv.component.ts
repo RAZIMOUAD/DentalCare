@@ -2,15 +2,14 @@ import { RendezvousService } from '../../../core/services/rendezvous.service';
 import { Component, OnInit, inject } from '@angular/core';
 import { RendezVousResponse } from '../../dashboard/models/rendezvous-response.model';
 import {LucideAngularModule} from 'lucide-angular';
-import {NgClass} from '@angular/common';
+import {CommonModule, NgClass} from '@angular/common';
 
 @Component({
   selector: 'app-mes-rdv',
-  templateUrl: './mes-rdv.component.html',
-  imports: [
-    LucideAngularModule,
-    NgClass
-  ],
+  standalone: true,
+
+  templateUrl: './mes-rdv.component.html',  imports: [CommonModule, LucideAngularModule, NgClass],
+
   styleUrls: ['./mes-rdv.component.css']
 })
 export class MesRdvComponent implements OnInit {

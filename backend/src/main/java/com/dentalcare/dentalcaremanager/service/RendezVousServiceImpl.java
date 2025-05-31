@@ -150,6 +150,7 @@ public class RendezVousServiceImpl implements RendezVousService {
 
     @Override
     public List<RendezVousResponse> getByUserId(Integer userId) {
+        log.info("🔍 Requête RDVs pour userId = {}", userId); // Ajoute cette ligne
         return rendezVousRepository.findByPatientId(userId).stream()
                 .map(RendezVousResponse::fromEntity)
                 .collect(Collectors.toList());

@@ -40,6 +40,7 @@ public class RendezVousController {
         // Récupérer un user connecté automatiquement
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         Integer userId = rendezVousService.getUserIdByEmail(email);
+        System.out.println("📧 User connecté : " + email + " → userId = " + userId);
         return ResponseEntity.ok(rendezVousService.getByUserId(userId));
     }
 

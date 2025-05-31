@@ -133,5 +133,9 @@ public class PatientServiceImpl implements PatientService {
 
         return patientRepository.findAll(spec, pageable);
     }
+    @Override
+    public Optional<User> findUserByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
 
 }

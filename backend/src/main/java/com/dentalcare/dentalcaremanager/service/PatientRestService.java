@@ -40,6 +40,8 @@ public interface PatientRestService {
 
     List<PatientResponse> getPatientsWithUserAccount();
     Page<PatientResponse> getPaginatedPatients(int page, int size, String nom, Boolean createdByAdmin, Boolean enabled);
+    PatientResponse getPatientByEmail(String email);
+    PatientResponse getCurrentPatient();
 
 
 }

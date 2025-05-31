@@ -63,5 +63,6 @@ public interface PatientService {
     List<Patient> getPatientsWithUserAccount();
     int synchronizeAllPatientsFromUsers();
     Page<Patient> getFilteredPatients(Pageable pageable, String nom, Boolean createdByAdmin, Boolean enabled);
+    Optional<User> findUserByEmail(String email);
 
 }

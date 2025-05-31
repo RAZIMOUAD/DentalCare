@@ -115,6 +115,10 @@ export class PatientService {
     return this.http.get<PatientResponse>(`${this.baseUrl}/email`, { params: { email } });
   }
 
+  /** 🔐 Récupère les informations du patient connecté */
+  getCurrentPatient(): Observable<PatientResponse> {
+    return this.http.get<PatientResponse>(`${this.baseUrl}/me`);
+  }
 
 
 }

@@ -38,6 +38,11 @@ export const USER_ACCOUNT_ROUTES: Routes = [
       {
         path: 'mes-rdv',
         loadComponent: () => import('./mes-rdv/mes-rdv.component').then(m => m.MesRdvComponent)
+      },
+      {
+        path: 'accueil',
+        loadComponent: () =>
+          import('./accueil/accueil.component').then(m => m.AccueilComponent)
       }
 
     ]

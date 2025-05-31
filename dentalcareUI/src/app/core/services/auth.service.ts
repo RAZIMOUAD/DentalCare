@@ -94,7 +94,7 @@ export class AuthService {
         console.log('✅ Redirection vers Dashboard')
       );
     } else if (roles.includes('ROLE_USER')) {
-      this.router.navigate(['/user-account']).then(() =>
+      this.router.navigate(['/user-account/accueil']).then(() =>
         console.log('✅ Redirection vers compte utilisateur')
       );
     } else {

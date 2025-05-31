@@ -10,7 +10,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import com.dentalcare.dentalcaremanager.patient.PatientRepository;
 
 import java.util.List;
 @Slf4j
@@ -19,6 +22,7 @@ import java.util.List;
 public class PatientRestServiceImpl implements PatientRestService {
 
     private final PatientService patientService;
+    private final PatientRepository patientRepository;
 
     private void mapRequestToPatient(PatientRequest request, Patient patient) {
         patient.setNom(request.getNom());
@@ -124,6 +128,30 @@ public class PatientRestServiceImpl implements PatientRestService {
         return patientsPage.map(this::mapToResponse);
     }
 
+    @Override
+    public PatientResponse getPatientByEmail(String email) {
+        Patient patient = patientRepository.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("Aucun patient trouvé pour l'email : " + email));
+        return mapToResponse(patient);
+    }
+
+
+    @Override
+    public PatientResponse getCurrentPatient() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String email = auth.getName();
+
+        User user = patientService.findUserById(
+                patientService.findUserByEmail(email)
+                        .orElseThrow(() -> new EntityNotFoundException("Utilisateur non trouvé"))
+                        .getId()
+        ).orElseThrow(() -> new EntityNotFoundException("Utilisateur introuvable"));
+
+        Patient patient = patientService.findByUserId(user.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Aucun patient associé à l'utilisateur"));
+
+        return mapToResponse(patient);
+    }
 
 
 }

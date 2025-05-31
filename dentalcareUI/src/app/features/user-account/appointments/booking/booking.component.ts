@@ -48,13 +48,13 @@ export class BookingComponent implements OnInit {
 
   ngOnInit(): void {
     this.initializeCalendar();
-    this.loadCurrentMonthConfirmedAppointments();
-    this.reloadMonth();
 
     this.websocketService.connect();
-    this.websocketService.confirmedRdv$.subscribe(() => this.loadCurrentMonthConfirmedAppointments());
-    this.websocketService.newRdv$.subscribe(() => this.loadCurrentMonthConfirmedAppointments());
-    this.websocketService.rejectedRdv$.subscribe(() => this.loadCurrentMonthConfirmedAppointments());
+
+    // WebSocket déclenche juste onMonthChange via API calendrier
+    this.websocketService.confirmedRdv$.subscribe(() => this.triggerCalendarReload());
+    this.websocketService.newRdv$.subscribe(() => this.triggerCalendarReload());
+    this.websocketService.rejectedRdv$.subscribe(() => this.triggerCalendarReload());
   }
 
   initializeCalendar(): void {
@@ -72,14 +72,19 @@ export class BookingComponent implements OnInit {
       events: [],
       eventClick: this.onEventClick.bind(this),
       dateClick: this.onDateClick.bind(this),
-      datesSet: this.onMonthChange.bind(this),
+      datesSet: this.onMonthChange.bind(this), // 🔁 déclenche à chaque changement de mois
     };
   }
 
   onMonthChange(arg: any): void {
-    const year = arg.start.getFullYear();
-    const month = arg.start.getMonth() + 1;
-    this.reloadMonth();
+    // 🔧 Utiliser arg.view.currentStart au lieu de arg.start
+    // pour obtenir le premier jour du mois actuel du calendrier
+    const currentDate = arg.view.currentStart;
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth() + 1;
+
+    console.log(`Chargement des RDV pour ${year}-${month}`); // Debug
+
     this.rendezvousService.getPublicByMonth(year, month).subscribe({
       next: (rdvs) => {
         this.reservedSlots = rdvs;
@@ -91,21 +96,11 @@ export class BookingComponent implements OnInit {
     });
   }
 
-  loadCurrentMonthConfirmedAppointments(): void {
+// ✅ Appelle un refresh "propre" en redéclenchant datesSet
+  triggerCalendarReload(): void {
     const calendarApi = this.calendarComponent.getApi();
     const currentDate = calendarApi.getDate();
-    const year = currentDate.getFullYear();
-    const month = currentDate.getMonth() + 1;
-
-    this.rendezvousService.getPublicByMonth(year, month).subscribe({
-      next: (rdvs) => {
-        this.reservedSlots = rdvs;
-        this.renderAppointmentsToCalendar(rdvs);
-      },
-      error: () => {
-        this.toast.error('❌ Erreur lors du chargement des RDV confirmés');
-      }
-    });
+    calendarApi.gotoDate(currentDate); // Cela redéclenche datesSet donc onMonthChange
   }
 
   renderAppointmentsToCalendar(rdvs: RendezVousResponse[]): void {
@@ -156,15 +151,4 @@ export class BookingComponent implements OnInit {
   toggleTable(): void {
     this.showTable = !this.showTable;
   }
-  reloadMonth(): void {
-    const calendarApi = this.calendarComponent.getApi();
-    const date = calendarApi.getDate();
-    const year = date.getFullYear();
-    const month = date.getMonth() + 1;
-    this.rendezvousService.getPublicByMonth(year, month).subscribe((rdvs) => {
-      this.reservedSlots = rdvs;
-      this.renderAppointmentsToCalendar(rdvs); // ✅
-    });
-  }
-
 }
