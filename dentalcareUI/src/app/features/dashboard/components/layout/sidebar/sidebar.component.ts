@@ -17,9 +17,6 @@ export class SidebarComponent {
 
   constructor(private authService: AuthService) {}
 
-  /**
-   * 🧭 Navigation principale avec icônes Lucide
-   */
   navItems = [
     { label: 'Accueil', icon: 'Home', route: '/dashboard/accueil' },
     { label: 'Patients', icon: 'Users', route: '/dashboard/patients' },
@@ -30,24 +27,10 @@ export class SidebarComponent {
     { label: 'Paramètres', icon: 'Settings', route: '/dashboard/parametres' },
   ];
 
-  /**
-   * 📂 Affichage de sous-menus dynamiques (si besoin)
-   */
-  openSubmenu: string | null = null;
-  toggleSubmenu(label: string): void {
-    this.openSubmenu = this.openSubmenu === label ? null : label;
-  }
-
-  /**
-   * 🌓 Toggle sidebar (mobile / desktop)
-   */
   onToggleSidebar(): void {
     this.toggleSidebar.emit();
   }
 
-  /**
-   * 🔐 Déconnexion
-   */
   onLogout(): void {
     this.authService.logout();
   }

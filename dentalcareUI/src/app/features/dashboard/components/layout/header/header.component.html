@@ -1,42 +1,45 @@
-<header class="w-full h-16 flex items-center justify-between px-6 bg-white shadow-sm border-b border-gray-200">
-  <!-- Branding (optionnel) -->
-  <div class="text-xl font-semibold text-blue-600 hidden sm:block">
-    Dashboard
+<header class="w-full h-16 flex items-center justify-between px-4 md:px-6 bg-white shadow-sm border-b border-gray-200">
+  <!-- ☰ Menu mobile -->
+  <button
+    (click)="onToggleSidebar()"
+    class="md:hidden text-gray-600 hover:text-emerald-600 transition"
+    aria-label="Ouvrir le menu"
+  >
+    <lucide-icon name="menu" class="w-6 h-6" />
+  </button>
+
+  <!-- Branding -->
+  <div class="text-xl font-bold text-emerald-600 tracking-tight hidden sm:block">
+    DentalCare Admin
   </div>
 
-  <!-- Droite : Profil + notifications -->
+  <!-- Barre à droite -->
   <div class="flex items-center gap-6">
 
-    <!-- Notifications -->
+    <!-- 🔔 Notifications -->
     <div class="relative">
-      <button class="text-gray-500 hover:text-blue-600 transition text-xl">
-        🔔
+      <button class="text-gray-600 hover:text-emerald-600 transition">
+        <lucide-icon name="bell" class="w-6 h-6" />
       </button>
       <span *ngIf="notifications > 0"
-            class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5">
+            class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5 shadow">
         {{ notifications }}
       </span>
     </div>
 
-    <!-- Nom de l'utilisateur -->
-    <div class="hidden sm:flex flex-col text-right">
-      <span class="text-sm text-gray-800 font-medium" *ngIf="fullName">
+    <!-- 👤 Nom + rôle -->
+    <div class="hidden sm:flex flex-col text-right leading-tight">
+      <span class="text-sm font-medium text-gray-800" *ngIf="fullName">
         Bonjour, {{ fullName }}
       </span>
       <span class="text-xs text-gray-400">Administrateur</span>
     </div>
 
-    <!-- Avatar -->
-    <img src="https://i.pravatar.cc/40?u=admin"
-         alt="Avatar"
-         class="w-10 h-10 rounded-full shadow-md border border-gray-200" />
-
-    <!-- Bouton logout -->
+    <!-- 🚪 Logout -->
     <button (click)="onLogout()"
-            class="text-gray-500 hover:text-red-500 transition text-xl"
+            class="text-gray-600 hover:text-red-500 transition"
             title="Déconnexion">
-      🚪
+      <lucide-icon name="logOut" class="w-6 h-6" />
     </button>
   </div>
 </header>
-

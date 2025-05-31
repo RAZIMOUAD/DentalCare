@@ -1,11 +1,13 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
+import {LucideIconsModule} from '@shared/modules/lucide-icons.module';
 
 @Component({
   selector: 'app-section-header',
-  imports: [],
+  standalone: true,
+  imports: [LucideIconsModule],
   templateUrl: './section-header.component.html',
-  styleUrl: './section-header.component.css'
 })
 export class SectionHeaderComponent {
-
+  @Input() icon: string = 'Settings';
+  @Input() title: string = '';
 }

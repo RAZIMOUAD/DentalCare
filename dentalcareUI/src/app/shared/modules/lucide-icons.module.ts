@@ -49,11 +49,15 @@ const selectedIcons = {
   LogOut: icons.LogOut,
   ArrowLeft: icons.ArrowLeft,
 
+
   // Icônes pour les actions
   Plus: icons.Plus,
   Search: icons.Search,
   Filter: icons.Filter,
   MoreVertical: icons.MoreVertical,
+  User: icons.User,
+  Sliders: icons.Sliders,
+  Shield: icons.Shield,
 
   // Icônes pour les statuts
   Check: icons.Check,

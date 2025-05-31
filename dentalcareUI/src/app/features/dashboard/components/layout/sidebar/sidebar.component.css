@@ -1,5 +1,7 @@
-/* Utilise Tailwind directement pour tout */
 :host {
   display: block;
   position: relative;
+  z-index: 40;
 }
+
+/* Aucun style supplémentaire nécessaire car tout est géré avec Tailwind */

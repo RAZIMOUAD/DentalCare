@@ -1,20 +1,20 @@
-// src/app/layouts/dashboard-layout/dashboard-layout.component.ts
-
-import {Component, inject, OnInit} from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { trigger, transition, style, animate } from '@angular/animations';
+
 import { SidebarComponent } from '../../features/dashboard/components/layout/sidebar/sidebar.component';
 import { HeaderComponent } from '../../features/dashboard/components/layout/header/header.component';
-import {AuthService} from '../../core/services/auth.service';
-import { trigger, transition, style, animate } from '@angular/animations';
+import { AuthService } from '../../core/services/auth.service';
+
 @Component({
   selector: 'app-dashboard-layout',
   standalone: true,
   imports: [
     CommonModule,
     RouterModule,
-    SidebarComponent,  // ✅ Sidebar de l’admin
-    HeaderComponent    // ✅ Header contenant photo, logout, etc.
+    SidebarComponent,
+    HeaderComponent
   ],
   templateUrl: './dashboard-layout.component.html',
   styleUrls: ['./dashboard-layout.component.css'],
@@ -27,22 +27,46 @@ import { trigger, transition, style, animate } from '@angular/animations';
     ])
   ]
 })
-export class DashboardLayoutComponent implements OnInit{
-
+export class DashboardLayoutComponent implements OnInit {
   isSidebarOpen: boolean = true;
   fullName: string | null = null;
 
   private authService = inject(AuthService);
+  private cdr = inject(ChangeDetectorRef);
 
   ngOnInit(): void {
-    const decoded = this.authService.getDecodedToken();
-    this.fullName = decoded ? decoded.sub : 'Administrateur';
-    console.log('✅ DashboardComponent chargé');
+    this.fullName = this.authService.getDecodedToken()?.sub || 'Administrateur';
+    this.adjustSidebarInitial();
+
+    window.addEventListener('resize', this.adjustSidebarResponsive.bind(this));
   }
+
+  /**
+   * Fix initial pour desktop/mobile
+   */
+  adjustSidebarInitial(): void {
+    const isMobile = window.innerWidth < 768;
+    this.isSidebarOpen = !isMobile;
+    this.cdr.detectChanges(); // ✅ évite NG0100
+  }
+
+  /**
+   * Réagit au resize pour forcer le sidebar sur desktop
+   */
+  adjustSidebarResponsive(): void {
+    const isMobile = window.innerWidth < 768;
+    if (!isMobile) this.isSidebarOpen = true;
+  }
+
   toggleSidebar(): void {
     this.isSidebarOpen = !this.isSidebarOpen;
   }
+
   logout(): void {
     this.authService.logout();
+  }
+
+  isMobile(): boolean {
+    return window.innerWidth < 768;
   }
 }
