@@ -43,6 +43,10 @@ export const USER_ACCOUNT_ROUTES: Routes = [
         path: 'accueil',
         loadComponent: () =>
           import('./accueil/accueil.component').then(m => m.AccueilComponent)
+      },
+      {
+        path: 'messages',
+        loadComponent: () => import('./messages/messages.component').then(m => m.MessagesComponent)
       }
 
     ]
